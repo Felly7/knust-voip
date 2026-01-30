@@ -45,7 +45,7 @@ const resources = [
         title: "Recommended VoIP Phone Models",
         description: "View approved and recommended VoIP phone models.",
         image: "Fanvil-X7.webp",
-        url: "https://drive.google.com/file/d/1IW5Pe8M47kitQmFtKQh4F2MqZal7IW0p/view?usp=sharing",
+        url: "https://drive.google.com/file/d/1nMsSezv6WEKZmmEgBUtvKo9sXHSq7_SE/view?usp=sharing",
         category: "Hardware"
     },
     {
