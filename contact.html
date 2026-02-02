@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | KNUST VoIP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <meta name="description" content="Contact KNUST VoIP Support and Report Issues.">
+</head>
+
+<body>
+    <div id="background-animation"></div>
+
+    <!-- Global Header -->
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="index.html" class="logo-area">
+                <span class="site-title">KNUST VoIP Directory</span>
+            </a>
+            <nav class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="services.html">Our Services</a>
+                <a href="resources.html">Resources</a>
+                <a href="about.html">About KVS</a>
+                <a href="contact.html" class="active">Contact Us</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        style="display:none;">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <header class="hero" style="margin-bottom: 3rem;">
+            <h1 class="fade-in">Contact & Support</h1>
+            <p class="subtitle fade-in-delay">Get help, report issues, or reach out to our support teams.</p>
+        </header>
+
+        <section class="grid-container fade-in-delay-2" style="margin-top: 2rem;">
+
+            <!-- Report Issue -->
+            <a href="https://helpdesk.knust.edu.gh/open.php" target="_blank" class="card service-card">
+                <div class="card-icon" style="background: #fee2e2; color: #dc2626;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                        </path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </div>
+                <h3 class="card-title">Report an Issue</h3>
+                <p class="card-description">
+                    Experiencing technical difficulties? Submit a ticket via the University Helpdesk system.
+                </p>
+                <div style="margin-top: auto; font-weight: 600; color: #dc2626;">Open Ticket &rarr;</div>
+            </a>
+
+            <!-- Training Manual -->
+            <a href="https://docs.google.com/document/d/1QhZ7lKkm1h_joyMGE0UdZVVJJmmS0o4dIygiyRCnIYg/edit?usp=sharing"
+                target="_blank" class="card service-card">
+                <div class="card-icon" style="background: #e0f2fe; color: #0284c7;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                </div>
+                <h3 class="card-title">Education & Training</h3>
+                <p class="card-description">
+                    Read the comprehensive VoIP Education and Training Manual for setup guides.
+                </p>
+                <div style="margin-top: auto; font-weight: 600; color: #0284c7;">Read Manual &rarr;</div>
+            </a>
+
+        </section>
+
+        <!-- Direct Contact Info -->
+        <section class="card fade-in-delay-3"
+            style="max-width: 800px; margin: 0 auto 4rem; text-align: left; border-left: 5px solid var(--primary-navy);">
+            <div style="display: flex; flex-direction: column; gap: 2rem;">
+
+                <!-- NOID DIVISION -->
+                <div>
+                    <h3
+                        style="color: var(--primary-navy); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 10px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                            <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                            <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                        </svg>
+                        Data Center UITS - NOID DIVISION
+                    </h3>
+                    <p style="margin: 0; color: var(--text-secondary);">Call or message us directly on the VoIP Phone
+                        Line:</p>
+                    <div style="font-size: 1.2rem; font-weight: 700; color: var(--text-primary); margin-top: 5px;">
+                        +233 50 912 2826 <span
+                            style="font-weight: 400; font-size: 1rem; color: var(--accent-orange);">(Ext: 170130)</span>
+                    </div>
+                </div>
+
+                <div style="height: 1px; background: #e2e8f0;"></div>
+
+                <!-- SUPPORT CENTER -->
+                <div>
+                    <h3
+                        style="color: var(--primary-navy); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 10px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                            </path>
+                        </svg>
+                        UITS - SUPPORT CENTER
+                    </h3>
+                    <p style="margin: 0; color: var(--text-secondary);">Available for general inquiries and support.</p>
+                    <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 10px;">
+                        <a href="tel:+233507110000" class="btn btn-outline"
+                            style="color: var(--primary-navy); border-color: #e2e8f0; background: #f8fafc;">+233 50 711
+                            0000</a>
+                        <a href="tel:+233507211000" class="btn btn-outline"
+                            style="color: var(--primary-navy); border-color: #e2e8f0; background: #f8fafc;">+233 50 721
+                            1000</a>
+                        <a href="tel:+233507110005" class="btn btn-outline"
+                            style="color: var(--primary-navy); border-color: #e2e8f0; background: #f8fafc;">+233 50 711
+                            0005</a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container" style="padding: 0;">
+            <p>&copy; 2026 VOIP Team. Kwame Nkrumah University of Science and Technology.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

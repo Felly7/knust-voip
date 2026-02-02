@@ -4,30 +4,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KNUST VoIP Directory | Home</title>
+    <title>VOIP Team Resources</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@500;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <meta name="description"
-        content="Official KNUST VoIP Directory - Find extensions for all colleges, departments, and units.">
+    <meta name="description" content="Centralized resource hub for the KNUST VOIP Users around the world">
 </head>
 
-<body class="page-home">
+<body>
     <div id="background-animation"></div>
 
     <!-- Global Header -->
     <header class="site-header">
         <div class="header-inner">
             <a href="index.html" class="logo-area">
+                <!-- Using a placeholder for logo since we don't have the file locally, or sticking to text -->
+                <!-- <img src="assets/logo.jpg" alt="KNUST Logo" class="logo-img"> -->
                 <span class="site-title">KNUST VoIP Directory</span>
             </a>
             <nav class="nav-links">
-                <a href="index.html" class="active">Home</a>
+                <a href="index.html">Home</a>
                 <a href="services.html">Our Services</a>
-                <a href="resources.html">Resources</a>
+                <a href="resources.html" class="active">Resources</a>
                 <a href="about.html">About KVS</a>
                 <a href="contact.html">Contact Us</a>
                 <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
@@ -54,36 +53,29 @@
     </header>
 
     <main class="container">
+        <section class="hero">
+            <h1 class="fade-in">VoIP Resources Hub</h1>
+            <p class="subtitle fade-in-delay">Centralized access to tools, guides, and support for the KNUST community.
+            </p>
 
-        <header class="hero">
-            <h1 class="fade-in">Telephone Directory</h1>
-            <p class="subtitle fade-in-delay">Search and find extensions for all University Units.</p>
-
-            <div class="hero-actions fade-in-delay-2"
-                style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center;">
-                <a href="print_directory.html" class="btn btn-outline">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
-                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-                        <rect x="6" y="14" width="12" height="8"></rect>
-                    </svg>
-                    Print Directory
-                </a>
-                <a href="admin/" class="btn btn-text"
-                    style="color: var(--text-light); opacity: 0.7; font-size: 0.9rem;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                        <line x1="3" y1="9" x2="21" y2="9"></line>
-                        <line x1="9" y1="21" x2="9" y2="9"></line>
-                    </svg>
-                    Admin Panel
-                </a>
+            <div class="about-text fade-in-delay">
+                <h3 style="color: var(--primary-navy); margin-bottom: 0.5rem; font-size: 1.1rem;">Welcome to KVS
+                    Resources</h3>
+                <p>
+                    The KNUST VoIP System (KVS) connects the entire university community.
+                    Manage your extensions, find contacts, and access support guides here.
+                    For the official university directory, please visit <a href="https://voip.knust.edu.gh/"
+                        target="_blank"
+                        style="color: var(--accent-orange); font-weight: 600; text-decoration: underline;">voip.knust.edu.gh</a>.
+                </p>
+                <div style="margin-top: 1rem;">
+                    <a href="about.html" style="color: var(--primary-navy); font-weight: 600; font-size: 0.9rem;">Learn
+                        more about KVS &rarr;</a>
+                </div>
             </div>
-        </header>
+        </section>
 
-        <section id="search-section" style="margin-bottom: 3rem;">
+        <section id="search-section">
             <div id="search-container" class="fade-in-delay-2">
                 <div class="glass-input-wrapper">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -92,33 +84,39 @@
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
-                    <input type="text" id="search-input" placeholder="Find a College, Department, or Unit...">
+                    <input type="text" id="search-input" placeholder="Search departments, resources, or guides...">
                 </div>
             </div>
         </section>
 
-        <section id="directory-container" class="fade-in-delay-3" style="min-height: 400px;">
-            <div id="directory-list" class="directory-list">
-                <!-- Directory Items injected by JS -->
-                <p style="text-align: center; color: var(--text-secondary);">Loading Directory...</p>
+        <!-- Navigation Tabs -->
+        <div class="tabs-container fade-in-delay-3">
+            <button class="tab-btn active" data-tab="resources">Resources & Guides</button>
+            <button class="tab-btn" data-tab="directory">Full Directory</button>
+        </div>
+
+        <!-- Resources Section -->
+        <section id="resources-section" class="tab-content active fade-in-delay-3">
+            <div id="resources-grid" class="grid-container">
+                <!-- Resources injected by JS -->
             </div>
         </section>
 
+        <!-- Directory Section -->
+        <section id="directory-section" class="tab-content fade-in-delay-3">
+            <div id="directory-list" class="directory-list">
+                <!-- Directory items injected by JS -->
+            </div>
+        </section>
     </main>
 
     <footer>
         <div class="container" style="padding: 0;">
-            <div style="margin-bottom: 1rem;">
-                <a href="https://voip.knust.edu.gh/files/directory/VOIP%20DIRECTORY%202025.pdf" target="_blank"
-                    style="color: white; text-decoration: underline; opacity: 0.8;">Download PDF Version</a>
-            </div>
             <p>&copy; 2026 VOIP Team. Kwame Nkrumah University of Science and Technology.</p>
         </div>
     </footer>
 
-    <!-- Load Directory Data -->
+    <!-- Load Directory Data first -->
     <script src="directory_data.js"></script>
     <script src="script.js"></script>
 </body>
-
-</html>
