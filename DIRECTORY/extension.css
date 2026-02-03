@@ -1,0 +1,125 @@
+.phone-department-title-container {
+    background-color:#0d063b; 
+    color:white;
+    text-align:center;
+    font-family:"Champagne & Limousines", "AvantGarde Md BT";
+    font-weight:bolder;
+    font-size:18px;
+}
+
+.section-list-container{
+    border-right:1px solid #ccc;
+}
+
+.section-list-header{
+    font-family:'Champagne & Limousines', 'AvantGarde Md BT'; 
+    font-size:30px;
+    padding-left:20px;
+}
+
+.section-list .li-item.active .name-lbl{
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+.section-list .li-item{
+    color:black;font-family:vrinda;
+    font-style:oblique;
+    background-color:#0d063b; 
+    line-height:35px;
+    text-align:left;
+    width:100%;
+    border:none;
+    
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+    
+.section-list .li-item .name-wrap{
+    padding-left:20px;
+    border-bottom:double;
+    border-bottom-color:#666;	
+    font-size:16px;
+}
+
+.phone-tbl-header tr {
+    background-color:#000;
+    font-family:AvantGarde Md BT;
+    font-size:18px;
+    font-weight:normal;
+    color:#FFF; 
+    text-align:center;
+}
+
+.phone-section-title-container{
+    background-color:#666;
+}
+
+.phone-section-title-container td{
+    color:#FFF; 
+    font-family:'Champagne &amp; Limousines', 'AvantGarde Md BT'; 
+    padding-left:10px; 
+    font-size:18px; 
+    font-weight:bolder;
+}
+.phone-list-container {
+    min-height:220px; 
+    /* overflow-y:auto;
+    overflow-x:auto;	 */
+}
+
+.phone-list .li-item:nth-child(odd){
+    background-color: #F3F1E6;
+}
+
+.phone-list .li-item:nth-child(even){
+    background-color: #F9F8F3;
+}
+
+.phone-list tr td{
+    font-family:Verdana, Arial, Helvetica, sans-serif;
+    padding-left:5px;
+    font-size:14px;
+}
+
+.phone-list tr td:first-child, .phone-tbl-header td:first-child{
+    width:530px
+}
+
+.phone-list tr td:nth-child(2), .phone-tbl-header td:nth-child(2){
+    width:100px
+}
+
+.phone-list tr td:nth-child(3), .phone-tbl-header td:nth-child(3){
+    width:122px
+}
+
+.phone-list tr td:nth-child(4), .phone-tbl-header td:nth-child(4){
+    width:100px
+}
+
+.phone-list .li-item:hover, .phone-list .li-item.active{
+    background-color: #c0bba4;
+}
+
+.phone-list .status-wrap .status-icon{
+    background-repeat: no-repeat;
+    background-position:center;
+    padding-left: 20px;
+}
+
+.phone-list .status-wrap .status-lbl:before{
+    content: 'Offline';
+}
+
+.phone-list .status-wrap .status-icon{
+    background-image: url( ../img/offline.gif );
+}
+
+.phone-list .status-online .status-wrap .status-lbl:before{
+    content: 'Online';
+}
+
+.phone-list .status-online .status-wrap .status-icon{
+   background-image: url( ../img/online.gif );
+}

@@ -1,0 +1,737 @@
+// JavaScript Document
+
+jQuery(function($){
+
+	$doc_body = $(document); 
+
+	let api = {
+		phone_edit_click:function( li ){
+			let $li = $(li), $ul_list = $li.closest('.ul-list'),
+			$name_lbl = $li.find('.name-lbl'), $name_txtbox = $('<input type="text" class="name-txtbox" />');
+			$digits_lbl = $li.find('.digits-lbl'), $digits_pre_lbl = $('<span class="digits-pre-lbl" ></span>'), $digits_txtbox = $('<input type="text" class="digits-txtbox" />'), 
+			ext = $li.data('ext'), dept_ext = $ul_list.data('dept_ext'), sec_ext = $ul_list.data('sec_ext');
+
+			$name_txtbox.val($name_lbl.text().trim()); 
+			$name_txtbox.insertAfter($name_lbl); 		
+						
+			$digits_txtbox.val(ext); 
+			$digits_txtbox.insertAfter($digits_lbl); 
+
+			$digits_pre_lbl.text(dept_ext + '' + sec_ext);
+			$digits_pre_lbl.insertBefore($digits_txtbox);
+									
+			$li.addClass('item-editing').removeClass('ajax-error'); 
+		}, 
+		phone_cancel_edit:function( li ){ 
+			let $li = $(li), $name_lbl = $li.find('.name-lbl'), $name_txtbox = $li.find('.name-txtbox'),
+			$digits_txtbox = $li.find('.digits-txtbox'), $digits_pre_lbl = $li.find('.digits-pre-lbl');
+
+			if( !$li.data('id') && $name_lbl.text().trim() == '' ){
+				$li.remove();
+				return;
+			}
+
+			$name_txtbox.remove();
+			$digits_txtbox.remove();
+			$digits_pre_lbl.remove();
+
+			$li.removeClass('item-editing').removeClass('ajax-error');
+		},
+		phone_save:function( li ){
+			let $li = $(li);
+
+			if( $li.hasClass('ajaxing') )
+				return;
+
+			let $ul_list = $li.closest('.ul-list'), $name_lbl = $li.find('.name-lbl'), $name_txtbox = $li.find('.name-txtbox'), 
+			$digits_lbl = $li.find('.digits-lbl'), $digits_txtbox = $li.find('.digits-txtbox');
+			let id = $li.data('id'), name = $name_txtbox.val(), ext = $digits_txtbox.val(), url = $ul_list.data('url_edit'), token = $ul_list.data('token');
+			let dept_ext = $ul_list.data('dept_ext'), sec_ext = $ul_list.data('sec_ext');
+			let data = {'id': id, 'name': name, 'ext': ext, 'dept_ext': dept_ext, 'sec_ext': sec_ext, 'action': 'phone_save', '_forgery_token': token};
+
+			$li.addClass('ajaxing').removeClass('ajax-error'); 
+			$.post(url, data, function(result, textStatus, request){
+				let error_o_msg = request.getResponseHeader('error_o_msg');
+				if( error_o_msg ){
+					api.add_li_error(li, error_o_msg);
+				}					
+
+				if( result && result.phone_id ){
+					if( !data.id ){
+						$li.attr('data-id', result.phone_id).data('id', result.phone_id);
+					}
+
+					if(result.phone_name)
+						$name_lbl.text(result.phone_name);
+
+					if( result.phone_dial )
+						$digits_lbl.text(result.phone_dial);
+
+					if( result.phone_ext )
+						$li.attr('data-ext', result.phone_ext).data('ext', result.phone_ext);
+
+					$li.find('.ip-lbl').text(result.phone_ip);
+					
+					$li.toggleClass('status-online', result.registered);
+
+					$li.toggleClass('not-in-ast', !result.phone_available);
+					
+					api.phone_cancel_edit( $li );
+				}			
+			}).always(function(){
+				$li.removeClass('ajaxing');
+			});
+		},
+		phone_add_click:function(){
+			let $li_clone =  $('#phone-list-clone .li-item:first-child').clone(), $ul_list = $('#phone-list'), $ul_list_body = $ul_list.find('tbody');			
+			$ul_list_body.append($li_clone);		
+			$edit = $li_clone.find('.ctrl-edit'); $edit.click();
+		},
+		phone_delete_click: function( li ){
+			let $li = $(li), ext = $li.find('.digits-lbl').text();
+
+			if( !confirm('Do yo want to delete extension: '+ ext) )
+				return;
+
+			let $ul_list = $li.closest('.ul-list');
+			let id = $li.data('id'), url = $ul_list.data('url_edit'), token = $ul_list.data('token');
+			let data = {'id': id,  'action': 'phone_delete', '_forgery_token': token};
+
+			$li.addClass('ajaxing').removeClass('ajax_error'); ; 
+			$.post(url, data, function(result, textStatus, request){
+				let error_o_msg = request.getResponseHeader('error_o_msg');
+				if( error_o_msg ){
+					api.add_li_error(li, error_o_msg);
+				}else{
+					$li.remove();
+				}		
+			}).always(function(){
+				$li.removeClass('ajaxing');
+			});
+			
+		}, 
+		phone_bulk_delete_click: function( bulk_ctrl, el ){
+			let $bulk_ctrl = $(bulk_ctrl);
+			if( $bulk_ctrl.hasClass('ajaxing') )
+				return;
+
+			if( !confirm('Do yo want to delete the selected extension(s)') )
+				return;
+
+			let $el = $(el), $ul = $el.closest('.editor-bulk-ctrl-wrap').find('.editor-list'),
+			$chkbxs = $ul.find('.li-item.selected :checkbox[name="ids[]"]'), ids = []; 
+			$chkbxs.each(function(i, v){
+				let $li = $(v).closest('.li-item');
+				ids.push( $li.data('id') );
+			});
+
+			if( !ids.length )
+				return;
+
+			let url = $ul.data('url_edit'), token = $ul.data('token'), $bulk_ctrl_wrap = $bulk_ctrl.closest('.editor-bulk-ctrl-wrap'),
+			data = {'ids': ids, 'action': 'phone_bulk_delete', '_forgery_token': token};
+		
+			$bulk_ctrl.addClass('ajaxing').removeClass('ajax-error'); 
+			$.post(url, data, function(result, textStatus, request){
+				let error_o_msg = request.getResponseHeader('error_o_msg');
+				if( error_o_msg ){
+					api.add_li_error(bulk_ctrl, error_o_msg);
+				}
+				
+				if( result && result.deleted && Array.isArray(result.deleted) ){ 
+					let del_selector = [];
+					$.each(result.deleted, function(i, v){
+						del_selector.push(`.li-item[data-id="${v}"]`);						
+					});		
+					let $lis = $ul.find(del_selector.join(', ')); $lis.remove();
+					api.any_select( $bulk_ctrl_wrap );			
+				}
+				
+			}).always(function(){
+				$bulk_ctrl.removeClass('ajaxing');
+			});
+			
+		}, 
+		phone_ast_add_click: function( li ){
+			let $li = $(li);
+
+			if( $li.hasClass('ajaxing') )
+				return;
+
+			let $ul_list = $li.closest('.ul-list');
+			let id = $li.data('id'), url = $ul_list.data('url_edit'), token = $ul_list.data('token'),
+			data = {'id': id, 'action': 'phone_asterisk_add', '_forgery_token': token};
+
+			$li.addClass('ajaxing').removeClass('ajax-error'); 
+			$.post(url, data, function(result, textStatus, request){
+				let error_o_msg = request.getResponseHeader('error_o_msg');
+				if( error_o_msg ){
+					api.add_li_error(li, error_o_msg);
+				}					
+
+				if( result && result.count ){ 					
+					$li.removeClass('not-in-ast');
+				}
+				
+			}).always(function(){
+				$li.removeClass('ajaxing');
+			});
+			
+		},
+		phone_bulk_ast_add_click: function( wrap, el ){
+			let $wrap = $(wrap);
+			if( $wrap.hasClass('ajaxing') )
+				return;
+
+			let $el = $(el), $ul = $el.closest('.editor-bulk-ctrl-wrap').find('.editor-list'),
+			$chkbxs = $ul.find('.li-item.selected :checkbox[name="ids[]"]'), ids = []; 
+			$chkbxs.each(function(i, v){
+				let $li = $(v).closest('.li-item');
+				ids.push( $li.data('id') );
+			});
+
+			if( !ids.length )
+				return;
+
+			let url = $ul.data('url_edit'), token = $ul.data('token'),
+			data = {'ids': ids, 'action': 'phone_bulk_asterisk_add', '_forgery_token': token};
+		
+			$wrap.addClass('ajaxing').removeClass('ajax-error'); 
+			$.post(url, data, function(result, textStatus, request){
+				let error_o_msg = request.getResponseHeader('error_o_msg');
+				if( error_o_msg ){
+					api.add_li_error(wrap, error_o_msg);
+				}					
+
+				if( result && result.count ){ 
+					$chkbxs.each(function(i, v){
+						let $li = $(v).closest('.li-item');
+						$li.removeClass('not-in-ast');
+					});					
+				}
+				
+			}).always(function(){
+				$wrap.removeClass('ajaxing');
+			});
+ 
+		},
+		
+		//Section
+		sec_edit_click:function( li ){
+			let $li = $(li), 
+			$name_lbl = $li.find('.name-lbl'), $name_txtbox = $('<input type="text" placeholder="Name" class="name-txtbox" />'),
+			$digits_txtbox = $('<input type="text" placeholder="Ext" class="digits-txtbox" />'), ext = $li.data('ext');
+
+			$name_txtbox.val($name_lbl.text().trim()); 
+			$name_txtbox.insertAfter($name_lbl); 		
+						
+			if( !$li.data('id') ){
+				$digits_txtbox.val(ext); 
+				$digits_txtbox.insertBefore($name_txtbox); 
+			}
+												
+			$li.addClass('item-editing').removeClass('ajax-error'); 
+		}, 
+		sec_cancel_edit:function( li ){
+			let $li = $(li), $name_lbl = $li.find('.name-lbl'), $name_txtbox = $li.find('.name-txtbox'), $digits_txtbox = $li.find('.digits-txtbox');
+
+			if( !$li.data('id') && $name_lbl.text().trim() == '' ){
+				$li.remove();
+				return;
+			}
+
+			$name_txtbox.remove();
+			$digits_txtbox.remove();
+
+			$li.removeClass('item-editing').removeClass('ajax-error');
+		}, 
+		sec_save:function( li ){
+			var $li = $(li);
+
+			if( $li.hasClass('ajaxing') )
+				return;
+
+			var $ul_list = $li.closest('.ul-list'), $name_lbl = $li.find('.name-lbl'), $name_txtbox = $li.find('.name-txtbox'), $digits_txtbox = $li.find('.digits-txtbox');
+			var id = $li.data('id'), name = $name_txtbox.val(), ext = $digits_txtbox.val(), url = $ul_list.data('url_edit'), token = $ul_list.data('token');
+			var dept_ext = $ul_list.data('dept_ext');
+			var data = {'id': id, 'name': name, 'ext': ext, 'dept_ext': dept_ext, 'action': 'section_save', '_forgery_token': token};
+
+			$li.addClass('ajaxing').removeClass('ajax_error');
+			$.post(url, data, function(result, textStatus, request){
+				var error_o_msg = request.getResponseHeader('error_o_msg');
+				if( error_o_msg ){
+					api.add_li_error(li, error_o_msg);
+				}					
+
+				if( result && result.section_id ){
+					if( !data.id ){
+						$li.attr('data-id', result.section_id).data('id', result.section_id);
+						if( $ul_list.find('.li-item').length == 1 ){
+							var url  = $ul_list.data('url_tmpl');
+							window.location = url.dataReplacer(result);
+						}
+					}
+
+					if(result.section_name){
+						$name_lbl.text(result.section_name);
+						if( $li.hasClass('active') )
+							$('.phone-section-title').text(result.section_name);
+					}						
+
+					if( result.section_ext ){
+						$li.attr('data-ext', result.section_ext).data('ext', result.section_ext);
+						var url  = $ul_list.data('url_tmpl');
+						$name_lbl.attr('href', url.dataReplacer(result));
+					}
+						
+					api.sec_cancel_edit( $li );
+				}			
+			}).always(function(){
+				$li.removeClass('ajaxing');
+			});
+		},
+		sec_add_click:function(){
+			var $li_clone = $('#section-list-clone .li-item:first-child').clone(), $ul_list = $('#section-list');
+			
+			$ul_list.append($li_clone); 
+		
+			$edit = $li_clone.find('.ctrl-edit'); $edit.click();
+		},
+		sec_delete_click: function( li ){
+			let $li = $(li), ext = $li.data('ext'), name = $li.find('.name-lbl').text().trim();
+
+			if( !confirm('Do yo want to delete Sub Unit: '+ name) )
+				return;
+
+			let $ul_list = $li.closest('.ul-list'), id = $li.data('id'), url = $ul_list.data('url_edit'), token = $ul_list.data('token');
+			let data = {'id': id,  'action': 'section_delete', '_forgery_token': token};
+
+			$li.addClass('ajaxing').removeClass('ajax-error'); ; 
+			$.post(url, data, function(result, textStatus, request){
+				let error_o_msg = request.getResponseHeader('error_o_msg');
+				if( error_o_msg ){
+					api.add_li_error(li, error_o_msg);
+				}else{
+					if( $li.hasClass('active') ){
+						let $li_open ;
+						if( ($li_open = $li.next() && $li_open.length) || ($li_open = $li.prev() && $li_open.length) ){
+							// let url = $li_open.find('.name-lbl').attr('href'); // window.location = url;
+							$li_open.click();
+						}else{
+							$('.tbl-phone-list').addClass('section-list-empty');
+						}
+					}
+					$li.remove();					
+				}		
+			}).always(function(){
+				$li.removeClass('ajaxing');
+			});			
+		}, 
+		sec_bulk_delete_click: function( bulk_ctrl, el ){
+			let $bulk_ctrl = $(bulk_ctrl);
+			if( $bulk_ctrl.hasClass('ajaxing') )
+				return;
+
+			if( !confirm('Do yo want to delete the selected Sub Unit(s)') )
+				return;
+
+			let $el = $(el), $ul = $el.closest('.editor-bulk-ctrl-wrap').find('.editor-list'),
+			$chkbxs = $ul.find('.li-item.selected :checkbox[name="ids[]"]'), ids = []; 
+			$chkbxs.each(function(i, v){
+				let $li = $(v).closest('.li-item');
+				ids.push( $li.data('id') );
+			});
+
+			if( !ids.length )
+				return;
+
+			let url = $ul.data('url_edit'), token = $ul.data('token'), $bulk_ctrl_wrap = $bulk_ctrl.closest('.editor-bulk-ctrl-wrap'),
+			data = {'ids': ids, 'action': 'section_bulk_delete', '_forgery_token': token};
+		
+			$bulk_ctrl.addClass('ajaxing').removeClass('ajax-error'); 
+			$.post(url, data, function(result, textStatus, request){
+				let error_o_msg = request.getResponseHeader('error_o_msg');
+				if( error_o_msg ){
+					api.add_li_error(bulk_ctrl, error_o_msg);
+				}
+				
+				if( result && result.deleted && Array.isArray(result.deleted) ){ 
+					let del_selector = [];
+					$.each(result.deleted, function(i, v){
+						del_selector.push(`.li-item[data-id="${v}"]`);
+					});	
+					let $del_lis = $ul.find(del_selector.join(', ')); $del_lis.not('.active').remove();
+					let $del_li_active = $del_lis.filter('.active');
+					if( $del_li_active.length ){
+						let $li;
+						if( (($li = $del_li_active.prev()) && $li.length) || (($li = $del_li_active.next()) && $li.length) ){
+							let url = $li.find('.name-lbl').attr('href'); window.location = url;
+						}else{
+							$('.tbl-phone-list').addClass('section-list-empty');
+						} 
+					}
+					api.any_select( $bulk_ctrl_wrap );			
+				}
+				
+			}).always(function(){
+				$bulk_ctrl.removeClass('ajaxing');
+			});	
+		}, 
+		sec_bulk_ast_add_click: function( wrap, el ){
+			let $wrap = $(wrap);
+			if( $wrap.hasClass('ajaxing') )
+				return;
+
+			let $el = $(el), $ul = $el.closest('.editor-bulk-ctrl-wrap').find('.editor-list'),
+			$chkbxs = $ul.find('.li-item.selected :checkbox[name="ids[]"]'), ids = []; 
+			$chkbxs.each(function(i, v){
+				let $li = $(v).closest('.li-item');
+				ids.push( $li.data('id') );
+			});
+
+			if( !ids.length )
+				return;
+
+			let url = $ul.data('url_edit'), token = $ul.data('token'),
+			data = {'ids': ids, 'action': 'section_bulk_asterisk_add', '_forgery_token': token};
+		
+			$wrap.addClass('ajaxing').removeClass('ajax-error');
+			$.post(url, data, function(result, textStatus, request){
+				let error_o_msg = request.getResponseHeader('error_o_msg');
+				if( error_o_msg ){
+					api.add_li_error(wrap, error_o_msg);
+				}					
+
+				if( result && result.msg ){ 
+					alert(result.msg);				
+				}
+				
+			}).always(function(){
+				$wrap.removeClass('ajaxing');
+			});
+ 
+		},
+		
+		//Department
+		dept_edit_click:function(li){
+			var $li = $(li), $name_lbl = $li.find('.name-lbl'), $name_txtbox = $('<input type="text" placeholder="name" class="name-txtbox" />');
+			var $digits_txtbox = $('<input type="text" placeholder="Ext" class="digits-txtbox" />'), ext = $li.data('ext');
+
+			$name_txtbox.val($name_lbl.text().trim()); 
+			$name_txtbox.insertAfter($name_lbl); 		
+						
+			if( !$li.data('id') ){
+				$digits_txtbox.val(ext); 
+				$digits_txtbox.insertBefore($name_txtbox); 
+			}			
+									
+			$li.addClass('item-editing').removeClass('ajax-error'); 
+		},
+		dept_cancel_edit:function( li ){
+			let $li = $(li), $name_lbl = $li.find('.name-lbl'), $name_txtbox = $li.find('.name-txtbox'),
+			$digits_txtbox = $li.find('.digits-txtbox');
+
+			if( !$li.data('id') && $name_lbl.text().trim() == '' ){
+				$li.remove();
+				return;
+			}
+
+			$name_txtbox.remove();
+			$digits_txtbox.remove();
+
+			$li.removeClass('item-editing').removeClass('ajax-error');
+		}, 
+		dept_save:function( li ){
+			let $li = $(li);
+
+			if( $li.hasClass('ajaxing') )
+				return;
+
+			let $ul_list = $li.closest('.ul-list'), $name_lbl = $li.find('.name-lbl'), $name_txtbox = $li.find('.name-txtbox'), 
+			$digits_txtbox = $li.find('.digits-txtbox');
+			let id = $li.data('id'), name = $name_txtbox.val(), ext = $digits_txtbox.val(), url = $ul_list.data('url_edit'), token = $ul_list.data('token');
+			let data = {'id': id, 'name': name, 'ext': ext, 'action': 'department_save', '_forgery_token': token};
+
+			$li.addClass('ajaxing').removeClass('ajax-error'); 
+			$.post(url, data, function(result, textStatus, request){
+				let error_o_msg = request.getResponseHeader('error_o_msg');
+				if( error_o_msg ){
+					api.add_li_error(li, error_o_msg);
+				}					
+
+				if( result && result.department_id ){
+					let $department_list_combo = $('.department-list-combo'), $department_list_combo_option;				
+					if( !data.id ){
+						$li.attr('data-id', result.department_id).data('id', result.department_id);
+						if( $ul_list.find('.li-item').length == 1 ){
+							window.location = $name_lbl.attr('href');
+						}
+						$department_list_combo_option = $('<option data-id="'+ result.department_id +'" />');
+						$department_list_combo_option.appendTo($department_list_combo);
+					}else{
+						$department_list_combo_option = $department_list_combo.find('option[data-id="'+result.department_id+'"]');
+					}
+
+					if(result.department_name){
+						$name_lbl.text(result.department_name);
+						if( $li.hasClass('active') ){
+							$('.phone-department-title').text(result.department_name);
+						}
+						$department_list_combo_option.text(result.department_name);
+					}						
+
+					if( result.department_ext ){
+						$li.attr('data-ext', result.department_ext).data('ext', result.department_ext);
+						var url  = $ul_list.data('url_tmpl');
+						$name_lbl.attr('href', url.dataReplacer(result));
+						$department_list_combo_option.attr('value', result.department_ext);
+					}			
+					
+					api.dept_cancel_edit( $li );
+				}			
+			}).always(function(){
+				$li.removeClass('ajaxing');
+			});
+		},
+		dept_add_click:function(){
+			let $li_clone = $('#department-list-clone .li-item:first-child').clone(), $ul_list = $('#department-list');			
+			$ul_list.append($li_clone); 
+		
+			$edit = $li_clone.find('.ctrl-edit'); $edit.click();
+		},
+		dept_delete_click: function( li ){
+			let $li = $(li), ext = $li.data('ext'), name = $li.find('.name-lbl').text().trim();
+
+			if( !confirm('Do yo want to delete department: '+ name) )
+				return;
+
+			let $ul_list = $li.closest('.ul-list');
+			let id = $li.data('id'), url = $ul_list.data('url_edit'), token = $ul_list.data('token');
+			let data = {'id': id,  'action': 'department_delete', '_forgery_token': token};
+
+			$li.addClass('ajaxing').removeClass('ajax-error'); ; 
+			$.post(url, data, function(result, textStatus, request){
+				let error_o_msg = request.getResponseHeader('error_o_msg');
+				if( error_o_msg ){
+					api.add_li_error(li, error_o_msg);
+				}else{
+					if( $li.hasClass('active') ){
+						let $li_next = $li.next().add($li.prev).first();
+						$li_next.click();
+						// let url = $ul_list.data('url_refresh');
+						// window.location = url;
+					}
+
+					if(id){
+						let $department_list_combo = $('.department-list-combo'), $department_list_combo_option = $department_list_combo.find('option[data-id="'+id+'"]');
+						$department_list_combo_option.remove();
+					}	
+
+					$li.remove();
+									
+				}		
+			}).always(function(){
+				$li.removeClass('ajaxing');
+			});			
+		}, 	
+		dept_bulk_delete_click: function( bulk_ctrl, el ){
+			let $bulk_ctrl = $(bulk_ctrl);
+			if( $bulk_ctrl.hasClass('ajaxing') )
+				return;
+
+			if( !confirm('Do yo want to delete the selected Unit(s)') )
+				return;
+
+			let $el = $(el), $ul = $el.closest('.editor-bulk-ctrl-wrap').find('.editor-list'),
+			$chkbxs = $ul.find('.li-item.selected :checkbox[name="ids[]"]'), ids = []; 
+			$chkbxs.each(function(i, v){
+				let $li = $(v).closest('.li-item');
+				ids.push( $li.data('id') );
+			});
+
+			if( !ids.length )
+				return;
+
+			let url = $ul.data('url_edit'), token = $ul.data('token'), $bulk_ctrl_wrap = $bulk_ctrl.closest('.editor-bulk-ctrl-wrap'),
+			data = {'ids': ids, 'action': 'department_bulk_delete', '_forgery_token': token};
+		
+			$bulk_ctrl.addClass('ajaxing').removeClass('ajax-error'); 
+			$.post(url, data, function(result, textStatus, request){
+				let error_o_msg = request.getResponseHeader('error_o_msg');
+				if( error_o_msg ){
+					api.add_li_error(bulk_ctrl, error_o_msg);
+				}
+				
+				if( result && result.deleted && Array.isArray(result.deleted) ){ 
+					let del_selector = [], del_combo_selector = [], $ul_combo = $('.department-list-combo');
+					$.each(result.deleted, function(i, v){
+						del_selector.push(`.li-item[data-id="${v}"]`);
+						del_combo_selector.push(`option[data-id="${v}"]`);
+					});	
+					let $del_lis = $ul.find(del_selector.join(', ')), $del_option_lis = $ul_combo.find(del_combo_selector.join(', '));						
+					$del_lis.not('.active').remove(); $del_option_lis.not('.active').remove();
+
+					let $del_li_active = $del_lis.filter('.active');
+					if( $del_li_active.length ){
+						let $li;
+						if( (($li = $del_li_active.prev()) && $li.length) || (($li = $del_li_active.next()) && $li.length) ){
+							let url = $li.find('.name-lbl').attr('href'); window.location = url;
+						}
+					}
+					api.any_select( $bulk_ctrl_wrap );			
+				}
+				
+			}).always(function(){
+				$bulk_ctrl.removeClass('ajaxing');
+			});	
+		}, 	
+		dept_bulk_ast_add_click: function( wrap, el ){
+			let $wrap = $(wrap);
+			if( $wrap.hasClass('ajaxing') )
+				return;
+
+			let $el = $(el), $ul = $el.closest('.editor-bulk-ctrl-wrap').find('.editor-list'),
+			$chkbxs = $ul.find('.li-item.selected :checkbox[name="ids[]"]'), ids = []; 
+			$chkbxs.each(function(i, v){
+				let $li = $(v).closest('.li-item');
+				ids.push( $li.data('id') );
+			});
+
+			if( !ids.length )
+				return;
+
+			let url = $ul.data('url_edit'), token = $ul.data('token'),
+			data = {'ids': ids, 'action': 'department_bulk_asterisk_add', '_forgery_token': token};
+		
+			$wrap.addClass('ajaxing').removeClass('ajax-error');
+			$.post(url, data, function(result, textStatus, request){
+				let error_o_msg = request.getResponseHeader('error_o_msg');
+				if( error_o_msg ){
+					api.add_li_error(wrap, error_o_msg);
+				}					
+
+				if( result && result.msg ){ 
+					alert(result.msg);				
+				}
+				
+			}).always(function(){
+				$wrap.removeClass('ajaxing');
+			});
+ 
+		},
+		
+		// Misc
+		add_li_error: function( li, msg ){
+			let $li = $(li), $el_error = $li.find('.error-panel');
+
+			$el_error.prop('title', msg);
+			$li.addClass('ajax-error');
+		}, 
+		any_select: function ( bulk_ctrl_wrap ){
+			$bulk_ctrl_wrap = $(bulk_ctrl_wrap); 
+			
+			let $bulk_ctrl = $bulk_ctrl_wrap.find('.editor-bulk-ctrl'), $ul = $bulk_ctrl_wrap.find('.editor-list'), $chbx = $ul.find(':checkbox[name="ids[]"]:checked');
+			$bulk_ctrl.toggleClass('item-seleted', $chbx.length > 0);
+		},
+		toggle_select: function( li, chkbx ){
+			let $li = $(li), $chkbx = $(chkbx), $bulk_ctrl_wrap = $li.closest('.editor-bulk-ctrl-wrap'); 
+
+			$li.toggleClass('selected', $chkbx.prop('checked'));
+			api.any_select( $bulk_ctrl_wrap );
+		},
+		toggle_bulk_select: function( li, el ){
+			let $el = $(el), $ul = $el.closest('.editor-bulk-ctrl-wrap').find('.editor-list'),
+			$chkbxs = $ul.find(':checkbox[name="ids[]"]'); 
+
+			$chkbxs.prop('checked', $el.prop('checked')).change();
+		},
+		
+	}
+
+	$doc_body.on('click', '.btn-ctrl', function (e) {
+		e.preventDefault(); let el = this, $el = $(el), $wrap = $el.closest('.editor-wrap'), $ul = $el.closest('.editor-list'), $li = $el.closest('.li-item');
+
+		if( $el.hasClass('ctrl-edit') ){
+			if( $ul.hasClass('section-list') ){
+				api.sec_edit_click( $li );
+			}else if( $ul.hasClass('department-list') ){
+				api.dept_edit_click( $li );
+			}else if( $ul.hasClass('phone-list') ){
+				api.phone_edit_click( $li );
+			}
+		}else if( $el.hasClass('ctrl-cancel') ){
+			if( $ul.hasClass('section-list') ){
+				api.sec_cancel_edit( $li );
+			}else if( $ul.hasClass('department-list') ){
+				api.dept_cancel_edit( $li );
+			}else if( $ul.hasClass('phone-list') ){
+				api.phone_cancel_edit( $li );
+			}	
+		}else if( $el.hasClass('ctrl-save') ){
+			if( $ul.hasClass('section-list') ){
+				api.sec_save( $li );
+			}else if( $ul.hasClass('department-list') ){
+				api.dept_save( $li );
+			}else if( $ul.hasClass('phone-list') ){
+				api.phone_save( $li );
+			}
+		}else if( $el.hasClass('ctrl-ast') ){
+			if( $ul.hasClass('section-list') ){
+				api.sec_ast_add_click( $li );
+			}else if( $ul.hasClass('department-list') ){
+				api.dept_ast_add_click( $li );
+			}else if( $ul.hasClass('phone-list') ){
+				api.phone_ast_add_click( $li );
+			}		
+		}else if( $el.hasClass('ctrl-add') ){
+			if( $el.hasClass('section-ctrl-add') ){
+				api.sec_add_click();
+			}else if( $el.hasClass('department-ctrl-add') ){
+				api.dept_add_click();
+			}else if( $el.hasClass('phone-ctrl-add') ){ 
+				api.phone_add_click();
+			}
+		}else if( $el.hasClass('ctrl-delete') ){ 
+			if( $ul.hasClass('section-list') ){
+				api.sec_delete_click( $li );
+			}else if( $ul.hasClass('department-list') ){
+				api.dept_delete_click( $li );
+			}else if( $ul.hasClass('phone-list') ){
+				api.phone_delete_click( $li );
+			}
+		}else if( $el.hasClass('ctrl-ast-bulk') ){ 
+			$li = $el.closest('.editor-bulk-ctrl');			
+			if( $wrap.hasClass('sec-editor') ){
+				api.sec_bulk_ast_add_click( $li, el );
+			}else if( $wrap.hasClass('dept-editor') ){
+				api.dept_bulk_ast_add_click( $li, el );
+			}else if( $wrap.hasClass('phone-editor') ){
+				api.phone_bulk_ast_add_click( $li, el );
+			}
+		}else if( $el.hasClass('ctrl-delete-bulk') ){ 
+			$li = $el.closest('.editor-bulk-ctrl');			
+			if( $wrap.hasClass('sec-editor') ){
+				api.sec_bulk_delete_click( $li, el );
+			}else if( $wrap.hasClass('dept-editor') ){
+				api.dept_bulk_delete_click( $li, el );
+			}else if( $wrap.hasClass('phone-editor') ){
+				api.phone_bulk_delete_click( $li, el );
+			}
+		}else if( $el.hasClass('phone_ctrl_refresh') ){
+			api.phone_update();
+		}				
+	});
+
+	$doc_body.on('change', '.change-ctrl', function (e) {
+		var el = this, $el = $(el), $ul = $el.closest('.editor-list'), $li = $el.closest('.li-item');
+		
+		if( $el.hasClass('ctrl-select') ){
+			api.toggle_select( $li, el );
+		}else if( $el.hasClass('ctrl-select-bulk') ){
+			api.toggle_bulk_select( $li, el );
+		}
+
+	});
+
+	
+});

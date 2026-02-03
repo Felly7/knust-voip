@@ -111,45 +111,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Listeners
-    if (searchInput) setupSearch();
+    setupSearch();
     if (tabButtons.length > 0) setupTabs(); // Only if tabs exist (resources page)
-
-    setupThemeToggle(); // New Theme Toggle Logic
-    createParticles();
 });
 
-// Theme Toggle Logic
-function setupThemeToggle() {
-    const themeToggle = document.getElementById('theme-toggle');
-    if (!themeToggle) return;
 
-    const sunIcon = themeToggle.querySelector('.sun');
-    const moonIcon = themeToggle.querySelector('.moon');
-
-    // Check for saved theme
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    updateIcons(savedTheme);
-
-    themeToggle.addEventListener('click', () => {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-        updateIcons(newTheme);
-    });
-
-    function updateIcons(theme) {
-        if (theme === 'dark') {
-            sunIcon.style.display = 'none';
-            moonIcon.style.display = 'block';
-        } else {
-            sunIcon.style.display = 'block';
-            moonIcon.style.display = 'none';
-        }
-    }
-}
 
 // Render Resources Cards
 function renderResources(data) {
@@ -203,9 +169,8 @@ function renderDirectory(data) {
         item.target = "_blank";
         item.className = 'directory-item';
         item.innerHTML = `
-            <div class="dir-icon">&raquo;</div>
-            <div class="dir-name">${unit.name}</div>
-            <div class="dir-action">View</div>
+            <span class="dir-icon">&raquo;</span>
+            <span class="dir-name">${unit.name}</span>
         `;
         directoryContainer.appendChild(item);
     });
@@ -253,29 +218,4 @@ function setupSearch() {
     });
 }
 
-// Particle Background
-function createParticles() {
-    const bg = document.getElementById('background-animation');
-    if (!bg) return;
 
-    const count = 15;
-    const colors = ['rgba(13, 6, 59, 0.05)', 'rgba(251, 191, 36, 0.1)', 'rgba(255, 102, 0, 0.05)'];
-
-    for (let i = 0; i < count; i++) {
-        const p = document.createElement('div');
-        const size = Math.random() * 40 + 20;
-        p.style.cssText = `
-            position: absolute;
-            width: ${size}px;
-            height: ${size}px;
-            background: ${colors[Math.floor(Math.random() * colors.length)]};
-            border-radius: 50%;
-            left: ${Math.random() * 100}%;
-            top: ${Math.random() * 100}%;
-            animation: float ${20 + Math.random() * 30}s infinite linear;
-            animation-delay: -${Math.random() * 20}s;
-            filter: blur(2px);
-        `;
-        bg.appendChild(p);
-    }
-}

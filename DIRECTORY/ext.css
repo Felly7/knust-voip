@@ -1,0 +1,104 @@
+.editor-bulk-ctrl-wrap{
+	position: relative;
+}
+
+.editor-bulk-ctrl-wrap .editor-bulk-ctrl{
+	position: absolute;
+	top: -25px;
+	right: 0px; 
+}
+	
+.phone-list .name-wrap,
+.section-list .name-wrap
+{
+	position: relative;
+}
+
+.phone-list .editor-ctrl,
+.section-list .editor-ctrl{
+	position: absolute; 
+	right: 0px; 
+	top: 0px;		
+	padding: 0 2px;
+}
+
+.phone-list .editor-ctrl{
+	background-color: white;
+}
+
+.phone-list .name-txtbox, .phone-list .digits-txtbox,
+.section-list .name-txtbox
+{
+	width:100%;
+	border:0;	
+	padding-left: 5px;	
+}
+
+.section-list .digits-txtbox, .department-list .digits-txtbox{
+	padding-left: 3px;
+	border: 0;
+	width:40px;
+}
+
+.section-list .name-txtbox, .department-list .name-txtbox{
+	border-left: 2px solid;
+}
+
+.phone-list .digits-wrap, 
+.section-list .name-wrap, .department-list .name-wrap{
+	display:flex;
+}
+
+.phone-list .item-editing td{
+	padding-left:0;
+}
+
+.section-list .item-editing .name-wrap{
+	padding:1px;
+}
+
+.editor-panel > *:before, 
+.editing-panel > *:before
+{
+	margin-right: 1px;
+	content:"|"
+}
+
+
+.editor-list .editor-panel, .editor-list .editing-panel, 
+.editor-list .item-editing .name-lbl, .editor-list .item-editing .digits-lbl,
+.editor-list .ajax-loading, 
+.editor-list .error-panel,	
+.editor-list .ast-panel,
+
+.department-list-empty .section-add-panel,
+.section-list-empty .phone-add-panel,
+
+.editor-list .select-panel,
+
+.editor-bulk-ctrl .action-panel,
+.editor-bulk-ctrl .ajax-loading,
+.editor-bulk-ctrl .error-panel
+{
+	display:none;
+}
+
+
+.editor-list .li-item:not(.item-editing):not(.ajaxing):hover .editor-panel, 
+.editor-list .li-item.item-editing:not(.ajaxing):hover .editing-panel,
+.editor-list .not-in-ast .ast-panel,
+
+.editor-list .ajaxing .ajax-loading,
+.editor-list .ajax-error .error-panel,
+
+.editor-list .li-item:not(.item-editing):not(.ajaxing):hover .select-panel, 
+.editor-list .li-item.selected:not(.item-editing):not(.ajaxing) .select-panel,
+
+.editor-wrap:hover .editor-bulk-ctrl.item-seleted:not(.ajaxing) .action-panel,
+.editor-bulk-ctrl.ajaxing .ajax-loading,
+.editor-bulk-ctrl.ajax-error .error-panel
+{
+	display: inline-block;
+}
+
+

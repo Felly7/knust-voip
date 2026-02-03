@@ -1,0 +1,207 @@
+// JavaScript Document
+
+jQuery(function(){
+	$doc_body = $(document); 
+
+    phone_update = (function(){
+        var opt = {}; opt.$voip_dir = $('#voip-dir-ext'); opt.url =  opt.$voip_dir.data('url_list'); opt.token = opt.$voip_dir.data('token');
+        opt.dept_ext =  opt.$voip_dir.data('dept_ext'); opt.sec_ext =  opt.$voip_dir.data('sec_ext'); opt.repeat = opt.enable_ext_update =  opt.$voip_dir.data('ext_update') ? true: false;
+        
+        opt.$phone_list = $('.phone-list'); opt.$phone_tbody =  opt.$phone_list.find('tbody'); opt.$phone_list_clone = $('#phone-list-clone');
+        opt.$phone_clone = opt.$phone_list_clone.find('.li-item:first-child').clone();
+
+        opt.$phone_sec_title = $('.phone-section-title');  opt.$phone_dept_title = $('.phone-department-title');
+    
+        opt.$section_list = $('.section-list'), opt.$section_list_clone = $('#section-list-clone'); opt.$section_clone =  opt.$section_list_clone.find('.li-item:first-child').clone();
+        opt.section_url_tmpl =  opt.$section_list.data('url_tmpl') || '';
+    
+        opt.$department_list = $('.department-list'), opt.$department_list_clone = $('#department-list-clone'); opt.$department_clone = opt.$department_list_clone.find('.li-item:first-child').clone();
+        opt.department_url_tmpl  =  opt.$department_list.data('url_tmpl') || ''; opt.$department_list_combo = $('.department-list-combo'); 
+    
+        opt.url = appfunc.addurlparam(opt.url, {'deptid': opt.dept_ext, 'secid': opt.sec_ext,'action': 'ext_status', '_forgery_token': opt.token});
+       
+        function server(){
+            if( EventSource ){
+                opt.url = appfunc.addurlparam(opt.url, {source: 'eventsource'});
+                esource();
+            }              
+        }
+
+        function esource(){
+            opt.evtSource = new EventSource(opt.url );
+            opt.evtSource.addEventListener('ext_update', function(e) {
+                var data = JSON.parse(e.data);
+                if(data){
+                    new update_ext(data);
+                }
+            }, false);
+        }
+
+        function li_before( list, id, ext, col = 'ext' ){
+            var $li_before, $list = $(list), exts = appfunc.$_data_list($list.filter(':not([data-id="'+ id +'"])'), ['id', 'ext']);
+            var before = appfunc.list_obj_item_before(exts, {id: id, ext: ext}, col);
+            if( before )
+                $li_before = $list.filter('[data-id="'+ before.id +'"]');
+
+            return $li_before;
+        }
+
+        function update_ext(result, error_o_msg){
+            if( error_o_msg && window.log ){
+                window.log(error_o_msg);
+            }					
+
+            if( result ){		
+                if(result.phones){
+                    var $phones = opt.$phone_list.find('.li-item'); 
+                    result.phones.forEach(function(phone){
+                        var $li = opt.$phone_list.find('[data-id="'+ phone.phone_id +'"]');
+                        if( !$li.length ){
+                            $li = opt.$phone_clone.clone(); 
+                            $li.attr('data-id', phone.phone_id).data('id', phone.phone_id );                           
+                            opt.$phone_tbody.append($li);
+                        }
+
+                        if( $li.attr('data-ext') != phone.phone_ext){
+                            $li.attr('data-ext', phone.phone_ext).data('ext', phone.phone_ext);
+
+                            var $li_before = li_before($phones, parseInt(phone.phone_id), phone.phone_ext );
+                            if( $li_before && $li_before.length)
+                                $li.insertAfter($li_before);
+                        }                            
+
+                        var $name_lbl = $li.find('.name-lbl');							
+                        if( $name_lbl.text().trim() != phone.phone_name)
+                            $name_lbl.text(phone.phone_name);
+
+                        var $digits_lbl = $li.find('.digits-lbl');
+                        if( $digits_lbl.text().trim() != phone.phone_dial )						
+                            $digits_lbl.text(phone.phone_dial); 
+
+                        var $ip_lbl =  $li.find('.ip-lbl');
+                        if( $ip_lbl.text().trim() != phone.ip)
+                            $ip_lbl.text(phone.ip); 
+
+                        $li.toggleClass('status-online', phone.registered);
+                    });                    
+                }	
+
+                if(result.phones_delete){
+                    result.phones_delete.forEach(function(id){
+                        var item = opt.$phone_list.find('[data-id="'+ id +'"]');
+                        item.remove();
+                    });
+                }
+
+                if(result.secs){
+                    var $sections = opt.$section_list.find('.li-item');
+                    result.secs.forEach(function(sec){ sec.department_ext
+                        var $li = opt.$section_list.find('[data-id="'+ sec.section_id +'"]');
+                        if( !$li.length ){
+                            $li = opt.$section_clone.clone();
+                            $li.attr('data-id', sec.section_id).data('id', sec.section_id);
+                            $li.find('.name-lbl').attr('href', opt.section_url_tmpl.dataReplacer(sec));			
+                            opt.$section_list.append($li);						
+                        }
+
+                        if( $li.attr('data-ext') != sec.section_ext){
+                            $li.attr('data-ext', sec.section_ext).data('ext', sec.section_ext);
+                            $li.find('.name-lbl').attr('href', opt.section_url_tmpl.dataReplacer(sec.section_ext));	
+
+                            var $li_before = li_before($sections, parseInt(sec.section_id), sec.section_ext );
+                            if( $li_before && $li_before.length)
+                                $li.insertAfter($li_before);
+                        }                            
+
+                        var $name_lbl = $li.find('.name-lbl'), name_lbl = $name_lbl.text();
+                        if( name_lbl != sec.section_name )
+                            $name_lbl.text(sec.section_name);
+
+                        if( $li.hasClass('active') && name_lbl != sec.section_name ){
+                            opt.$phone_sec_title.text(sec.section_name);
+                        }
+                    });
+
+                }
+
+                if(result.secs_delete){
+                    result.secs_delete.forEach(function(id){
+                        var item = opt.$section_list.find('[data-id="'+ id +'"]');
+                        item.remove();
+                    });
+                }
+
+                if(result.depts){
+                    var $departments = opt.$department_list.find('.li-item'), $departments_combo = opt.$department_list_combo.find('option');                    
+                    result.depts.forEach(function(dept){								
+                        var $li = opt.$department_list.find('[data-id="'+ dept.department_id +'"]'),
+                        $li_combo = opt.$department_list_combo.find('[data-id="'+ dept.department_id +'"]');
+
+                        if( !$li.length ){
+                            $li = opt.$department_clone.clone();
+                            $li.attr('data-id', dept.department_id).data('id', dept.department_id);
+                            $li.find('.name-lbl').attr('href', opt.department_url_tmpl.dataReplacer(dept.department_id));
+                            opt.$department_list.append($li);
+                        }
+
+                        if( !$li_combo.length ){
+                            $li_combo = $('<option data-id="'+ dept.department_id +'" />');	
+                            opt.$department_list_combo.append($li_combo);
+                        }
+
+                        if( $li.attr('data-ext') != dept.department_ext){
+                            $li.attr('data-ext', dept.department_ext).data('ext', dept.department_ext);
+                            $li.find('.name-lbl').attr('href', opt.department_url_tmpl.dataReplacer(dept.department_ext));
+
+                            // var $li_before = li_before($departments, parseInt(dept.department_id), dept.department_ext );
+                            // if( $li_before && $li_before.length)
+                            //     $li.insertAfter($li_before);
+                        }
+
+                        if( $li_combo.attr('data-ext') != dept.department_ext){
+                            $li_combo.attr('data-ext', dept.department_ext).data('ext', dept.department_ext);
+
+                            // var $li_combo_before = li_before($departments, parseInt(dept.department_id), dept.department_ext );
+                            // if( $li_combo_before && $li_combo_before.length)
+                            //     $li.insertAfter($li_combo_before);
+                        }                            
+
+                        if( $li_combo.val() != dept.department_ext )
+                            $li_combo.val(dept.department_ext);
+
+                        var $name_lbl = $li.find('.name-lbl'), name_lbl = $name_lbl.text();
+                        if( name_lbl != dept.department_name )
+                            $name_lbl.text(dept.department_name);
+
+                        if( $li_combo.text() != dept.department_name )
+                            $li_combo.text(dept.department_name);
+
+                        if( $li.hasClass('active') && name_lbl != dept.department_name ){
+                            opt.$phone_dept_title.text(dept.department_name);
+                        }
+                    });                    
+                }
+
+                if(result.depts_delete){
+                    result.depts_delete.forEach(function(id){
+                        var item = opt.$department_list.find('[data-id="'+ id +'"]');
+                        var item_combo = opt.$department_list_combo.find('[data-id="'+ id +'"]');
+                        item.remove();
+                        item_combo.remove();
+                    });
+                }	
+
+            }
+        }
+
+        opt.server = server;
+    
+        return opt;			
+    })();
+
+    window.phone_update = phone_update;
+
+    if( phone_update.enable_ext_update)
+        phone_update.server();
+	
+});

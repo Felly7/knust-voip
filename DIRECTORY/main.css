@@ -1,0 +1,135 @@
+@charset "utf-8";
+/* CSS Document */
+
+*{
+   padding:0px;margin:0px;
+ }
+
+ /******************    header  Start    *******************/
+
+ #site-header, #site-footer{
+    background-color:#0d063b;
+}
+
+.navbar{
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+#site-header{
+    margin-bottom: 20px;
+}
+
+#site-header .navbar-nav a{
+    color:#FFF;
+}
+
+#site-header .navbar-nav .dropdown-menu a
+{
+    color: #212529;
+}
+
+#site-header .nav-logo{
+    font-size: 30px; 
+    font-weight: bold; 
+}
+
+#site-header .nav-logo img{
+    height: 50px;
+    width: 50px;
+}
+
+ /******************    header  End    *******************/
+
+ /****************** Footer Start  ********************/
+#footer{
+  height:50px;
+  background:#52647A;
+  border-top:#000000 solid 1px;
+  clear:both;
+ }
+ 
+#footer ul li{
+ list-style:none;
+ padding:2px;
+ display:inline-block;
+ color:#FFFFFF;
+ font-size:12px;
+ font-family:Arial, Helvetica, sans-serif;
+}
+#footer ul{
+ text-align:center;
+ margin-top:20px;
+ margin-bottom:20px;
+}
+#footer ul li a{
+ color:#FFFFFF;
+ text-decoration:none;
+}
+
+/**************** Fotter End *********************/
+
+
+/********************* Colleges Start **********************/
+.department-list-container{
+    margin:0px auto;
+    background:#0d063b;
+    color:#57642A;
+    font-family:Verdana, Arial, Helvetica, sans-serif;
+    line-height:20px;
+    font-size:13px;
+}
+
+ .department-list-header{
+    border-bottom:1px dotted #006699;
+    text-align:center;
+    color:#FF0 ; 
+}
+
+ .department-list {
+    margin-left:80px;
+    padding-bottom:20px;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-flow: row wrap;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+.department-list .li-item{
+    list-style:none; 
+    display:inline-block;
+    width:18%;
+    padding:3px;
+    line-height:20px;
+    color:#FFFF00; 
+    margin-top: 5px;  
+    margin-right: 7px;
+    text-align: left;
+}
+.department-list .name-lbl{
+    text-decoration:none;
+    color:#ffffff;
+    margin-right:2px;
+}
+
+.department-list .name-lbl:hover,
+.department-list .li-item.active .name-lbl {
+	  color:#FF6600;
+}
+.department-list .li-item-icon{
+    margin-right:3px;
+    margin-left:-10px;
+}
+
+/********************* Colleges End **********************/
+
+
+
+.ui-autocomplete {
+    max-height: 300px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+}

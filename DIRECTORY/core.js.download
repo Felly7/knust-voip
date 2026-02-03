@@ -1,0 +1,894 @@
+// JavaScript Document
+
+(function ($) {
+	window.appfunc = {
+		getFunction: function (code, argNames) {
+			var fn = window, parts = (code || "").split(".");
+			while (fn && parts.length) {
+				fn = fn[parts.shift()];
+			}
+			if (typeof (fn) === "function") {
+				return fn;
+			}
+			argNames.push(code);
+			return Function.constructor.apply(null, argNames);
+		},
+		addurlparam: function (url, query) {
+			if (!query) return url;
+			var oldobj = {}; url = url.split('?');
+			if (url[1]) {
+				pair = url[1].split('&');
+				$.each(pair, function (i, param) {
+					var params = param.split('=');
+					oldobj[decodeURIComponent(params[0])] = decodeURIComponent(params[1]);
+				});
+			}
+			if (typeof query === 'string') {
+				query = query.split('?');
+				query = query.length > 1 ? query[1] : query[0];
+			} else {
+				if ($.isArray(query)) {
+					$.each(query, function (i, param) {
+						oldobj[decodeURIComponent(param.name)] = decodeURIComponent(param.value);
+					});
+				} else {
+					oldobj = $.extend({}, oldobj, query);
+				}
+				query = $.param(oldobj).replace(/\+/g, "%20");
+			}
+
+			url = !query ? url[0] : url[0] + '?' + query;
+			return url;
+		},
+		querytoobj: function (s) {
+			var obj = JSON.parse('{"' + s.replace(/&/g, '","').replace(/=/g, '":"') + '"}', function (key, value) {
+				return key === "" ? value : decodeURIComponent(value)
+			});
+			return obj;
+		},
+		$_data_list:function( $j, data_name){
+			var list = [], is_array = $.isArray(data_name);
+			$($j).each(function(i, v){
+				var data, $v = $(v);
+				if( is_array ){
+					data = {};
+					data_name.forEach(function(i_v){
+						data[i_v] = $v.data(i_v);
+					});		
+				}else{
+					data = $v.data(data_name);
+				}
+				
+				list.push(data);
+			});
+			return list;
+		},
+		list_item_before: function(list, item){
+			list.push(item); list.sort(function(a, b){return a - b});
+			var index = list.indexOf(item);
+			var before_index = index - 1;
+			var before = list[before_index];
+
+			return before; 
+		},
+		list_obj_item_before:function(list, item, key){
+			list.push(item); list.sort(function(a, b){ return a[key] - b[key]});
+			var list_key = appfunc.arr_column(list, key);
+			var before, index = list_key.indexOf(item[key]);
+			if(index > 0){
+				var before_index = index - 1, before = list[before_index];				
+			}			
+
+			return before;
+		}, 
+		arr_column: function( list, col ){
+			var list_r = [];
+			list.forEach(function(v){
+				list_r.push(v[col]);
+			});
+
+			return list_r;
+		},
+		guid: function () {
+			function s4() {
+				return Math.floor((1 + Math.random()) * 0x10000)
+					.toString(16)
+					.substring(1);
+			}
+			return s4() + s4() + '-' + s4() + s4() + '-' + s4() + s4() + '-' + s4() + s4();
+		},
+		triggerEvent: function ($el, name, params) {
+			// Trigger an event
+			var e = $.Event(name);
+			$el.trigger(e, params);
+			if (e.isDefaultPrevented()) {
+				return false;
+			}
+			return e.result;
+		},
+		timeSince: function(date) {
+
+			var seconds = Math.floor((new Date() - date) / 1000);
+		  
+			var interval = Math.floor(seconds / 31536000);
+		  
+			if (interval > 1) {
+			  return interval + " years";
+			}
+			interval = Math.floor(seconds / 2592000);
+			if (interval > 1) {
+			  return interval + " months";
+			}
+			interval = Math.floor(seconds / 86400);
+			if (interval > 1) {
+			  return interval + " days";
+			}
+			interval = Math.floor(seconds / 3600);
+			if (interval > 1) {
+			  return interval + " hours";
+			}
+			interval = Math.floor(seconds / 60);
+			if (interval > 1) {
+			  return interval + " minutes";
+			}
+			return Math.floor(seconds) + " seconds";
+		},
+		template:( function () {
+			var templateSettings = {
+				evaluate: /<#([\s\S]+?)#>/g, interpolate: /\{\{\{([\s\S]+?)\}\}\}/g, escape: /\{\{([^\}]+?)\}\}(?!\})/g,
+			};
+			var noMatch = /(.)^/;
+			var escapes = {
+				"'": "'", '\\': '\\', '\r': 'r', '\n': 'n', '\u2028': 'u2028', '\u2029': 'u2029'
+			};
+			var escapeRegExp = /\\|'|\r|\n|\u2028|\u2029/g;
+
+			var escapeChar = function (match) {
+				return '\\' + escapes[match];
+			};
+
+			function template(text, settings) {
+				settings = $.extend({}, templateSettings, settings);
+
+				// Combine delimiters into one regular expression via alternation.
+				var matcher = RegExp([
+					(settings.escape || noMatch).source,
+					(settings.interpolate || noMatch).source,
+					(settings.evaluate || noMatch).source
+				].join('|') + '|$', 'g');
+
+				// Compile the template source, escaping string literals appropriately.
+				var index = 0, source = "__p+='";
+				text.replace(matcher, function (match, escape, interpolate, evaluate, offset) {
+					source += text.slice(index, offset).replace(escapeRegExp, escapeChar);
+					index = offset + match.length;
+
+					if (escape) {
+						source += "'+\n((__t=(" + escape + "))==null?'':_.escape(__t))+\n'";
+					} else if (interpolate) {
+						source += "'+\n((__t=(" + interpolate + "))==null?'':__t)+\n'";
+					} else if (evaluate) {
+						source += "';\n" + evaluate + "\n__p+='";
+					}
+
+					// Adobe VMs need the match returned to produce the correct offset.
+					return match;
+				});
+				source += "';\n";
+
+				// If a variable is not specified, place data values in local scope.
+				if (!settings.variable) source = 'with(obj||{}){\n' + source + '}\n';
+
+				source = "var __t,__p='',__j=Array.prototype.join," +
+					"print=function(){__p+=__j.call(arguments,'');};\n" +
+					source + 'return __p;\n';
+
+				var render;
+				try {
+					render = new Function(settings.variable || 'obj', source);
+				} catch (e) {
+					e.source = source;
+					throw e;
+				}
+
+				var template = function (data) {
+					return render.call(this, data);
+				};
+
+				// Provide the compiled source as a convenience for precompilation.
+				var argument = settings.variable || 'obj';
+				template.source = 'function(' + argument + '){\n' + source + '}';
+
+				return template;
+			}
+
+
+			var plugin = function (selector, data, settings ) {
+				var $tmpl = $(selector), html = $tmpl.html();
+				var compile = template(html, settings);
+
+				if ( data ) {
+					return compile(data);
+				}
+				return compile;
+			}
+
+			plugin.template = template;
+
+			return plugin;
+		})()
+	};
+
+	var app = {
+		init: function ($wrap) {
+			app.protos();
+			app.jqueryext();
+			app.docattach();
+			$(function () {
+				app.docready();
+			});
+		},
+		docready: function() {
+			var $doc = $(document);
+			if (window.location.hash) {
+				var hash = window.location.hash, $tab;
+				$tab = (($tab = $("a[href='" + hash + "']")).length ? $tab : $("[data-target='" + hash + "']")).first();
+				$tab.click();
+			} else{
+				var $autoload = $('[data-pg_autoload]');
+				if ($autoload.data('pg_autoload')) {
+					$autoload.click(); $autoload.data('pg_autoload', false);
+				}				
+			}
+
+			elFunc._init($doc);
+		},
+		protos: function () {
+			String.prototype.strReplacer = function (data) {
+				return this.replace(/\{([^\}]+)?\}/g, function ($1, $2) {
+					return data[$2];
+				});
+			}
+			String.prototype.dataReplacer = function (data) {
+				var str = this;
+				return this.replace(/\{([^\}]+)?\}/g, function (match, $1) {
+					var n_data = data, parts = $1.split("."); //console.log(parts);
+					while (n_data && parts.length)
+						n_data = n_data[parts.shift()];
+
+					if (typeof (n_data) === "function")
+						n_data = n_data($1, data, str);
+
+					return n_data !== undefined ? n_data : '';
+				});
+			}
+
+			String.prototype.strformat = function () {
+				//if (!this || !this.replace) return this;
+				var args = arguments;
+				return this.replace(/{(\d+)}/g, function (match, number) {
+					return typeof args[number] != 'undefined'
+						? args[number]
+						: match
+						;
+				});
+			}
+
+			String.prototype.interpolate = function(params) {
+				const names = Object.keys(params);
+				const vals = Object.values(params);
+				let func = new Function(...names, `return \`${this}\`;`); //(...vals);
+				return func(...vals);
+			}
+
+			Array.prototype.column = function( column ){
+				var list_r = [];
+				this.forEach(function(v){
+					list_r.push(v[column]);
+				});
+
+				return list_r;
+			}
+		},
+		jqueryext: function () {
+			$.fn.formobj = function () {
+				var forms = $(this).serializeArray(), data = {};
+				$.each(forms, function (index, obj) {
+					var v = data[obj.name];
+					if ($.isArray(v)) {
+						data.push(obj.value);
+					} else if (v != undefined) {
+						data[obj.name] = [];
+						data[obj.name].push(v);
+						data[obj.name].push(obj.value);
+					} else {
+						data[obj.name] = obj.value;
+					}
+				});
+				return data;
+			}
+
+			$.fn.removeClassStartsWith = function( classN ){
+                $(this).removeClass (function (index, className) {
+                    var reg = new RegExp( '(^|\\s)(' + classN + '\\S+)', "igm");
+                    return (className.match(reg) || []).join(' ');
+                });
+            }  
+
+			$.fn.exfind = function ( selector ) {
+				var el = this;
+			}
+
+			$.extend($.expr[':'], {
+				tab_target: function (el, index, match) {
+					return $(el).is('');
+				},
+			});
+		},
+		docattach: function () {
+			var $doc_body = $(document), ajax_ds_draw = {};
+
+			$doc_body.on('click', '[data-delete_alert]', function (e) {
+				var $btn = $(this), conf = confirm($btn.data('delete_alert'));
+				$btn.data('confirm_submit', conf);
+				if (!conf)
+					return false;
+			}); 
+
+			$doc_body.on('click', '[data-remove_el_alert]', function (e) {
+				e.preventDefault();
+				var selector, el_target, el = this, conf = confirm(el.getAttribute('data-remove_el_alert'));
+				if (!conf)
+					return false;
+
+				if (!(selector = el.getAttribute('data-target')) || selector === '#') {
+					var hrefAttr = el.getAttribute('href');
+					selector = hrefAttr && hrefAttr !== '#' ? hrefAttr.trim() : '';					
+				}
+
+				if( selector && selector !== '#' && (el_target = document.querySelector(selector)) ){
+					el_target.parentNode.removeChild(el_target);
+				}
+			});
+
+			$doc_body.on('click', '[data-alert_msg]', function (e) {
+				var $btn = $(this), conf = confirm($btn.data('alert_msg'));
+				$btn.data('alert_msg', conf);
+				if (!conf)
+					return false;
+			});
+
+			$doc_body.on('click', 'a[data-ajax]', function (e) {
+				e.preventDefault(); var btn = this, $btn = $(btn), btn_opt = $btn.data('ajax_opt') || {};
+				var	url = $btn.data('url') || $btn.attr('href');
+				var opt = { url: url, method: btn_opt.method || 'get', evt:e, data: btn_opt.data };
+				
+				elFunc._ajax(btn, opt); //ajax(btn, opt);
+			});
+			$doc_body.on('change', 'select[data-ajax]', function (e) {
+				e.preventDefault(); var select = this, $select = $(select), sel_opt = $select.data('ajax_opt') || {};
+				var url = $select.data('url'), data = {}; data[$select.attr('name')] = $select.val();
+				var opt = { url: appfunc.addurlparam(url, data), method: sel_opt.method || 'get', evt: e };
+								
+				elFunc._ajax(select, opt); //ajax(select, opt);
+			});
+			$doc_body.on('submit', 'form[data-ajax]', function (e) {
+				e.preventDefault(); var form = this, $form = $(form), sub_param = $form.data('submit_param');
+
+				$form.trigger($.Event("ajax_form_data"), [sub_param]);
+
+				var opt = { data: $form.serializeArray(), $sub_el: $($form.data('submit_el')), evt: e };
+				if (sub_param) {
+					opt.data.push(sub_param); $form.data('submit_el', undefined).data('submit_param', undefined);
+				}
+				
+				if ($form.attr("enctype") == "multipart/form-data") {
+					var formdata = new FormData();
+					$.each(opt.data, function (i, v) {
+						formdata.append(v.name, v.value);
+					});
+					$("input[type=file]", $form).each(function () {
+						var file = this;
+						$.each(file.files, function (n, v) {
+							formdata.append(file.name, v);
+						});
+					});
+					opt.data = formdata;
+				}
+
+				opt.url = opt.$sub_el.attr('formaction') || $form.attr('action');
+				opt.method = opt.$sub_el.attr('formmethod') || $form.attr('method') || 'post';
+				opt.mode = opt.$sub_el.data('ajax_mode');
+				opt.target = opt.$sub_el.data('ajax_target');
+				opt.el_delete_prefix = opt.$sub_el.data('ajax_el_delete_prefix');
+				opt.el_refresh = opt.$sub_el.data('ajax_el_refresh');
+								
+				elFunc._ajax(form, opt); //ajax(form, opt);
+			});
+			$doc_body.on('click', 'form[data-ajax] :submit', function (e) {
+				var $btn = $(this), $form = $btn.closest('form');
+				if ($btn.attr('name')) {
+					btn_data = { name: $btn.attr('name'), value: $btn.val() };
+					$form.data('submit_param', btn_data);
+				}
+				$form.data('submit_el', $btn);
+			});
+			
+			$doc_body.on('change', 'select[data-ds], :file[data-ds]', function (e) {
+				var el = this, $el = $(el), url = $el.data('ds'), guid = $el.data('u_guid'), formdata = new FormData();
+				var $target = $($el.data('ds_target')), name = $el.data('ds_name') || el.name || "Id"; 
+
+				if ( !guid ) 
+					$el.data( 'u_guid', (guid = appfunc.guid()) );
+
+				if (ajax_ds_draw[guid] == undefined)
+					ajax_ds_draw[guid] = 0;
+				
+				var ajax_opt = { url: url, method: $el.data('ds_method') ? $el.data('ds_method') : ( $el.is(':file')? 'POST': 'GET') };
+				var opt_url = { draw: ++ajax_ds_draw[guid] };
+				if ($el.is('select')) {
+					opt_url[name] = $el.val();
+				} else if ($el.is(':file')) {					
+					formdata.append(name , el.files[0]);					
+				}
+
+				$.extend(ajax_opt, { processData: false, contentType: false });
+				ajax_opt.url = appfunc.addurlparam(ajax_opt.url, opt_url);
+
+				formdata.append( '__RequestVerificationToken', $('[name=__RequestVerificationToken]').val() ); ajax_opt.data = formdata; 
+				$target.empty(); $target.prop('disable', true);
+				$.ajax(ajax_opt).done(function (result) {
+					if(result && result.data) {
+						if ( result.draw == ajax_ds_draw[guid] ) {
+							var rlbl = result.text, rval = result.value;
+							if ($target.data('ds_none')) {
+								$target.append('<option></option>');
+							}
+							$.each(result.data, function (i, item) {
+								var lbl = item[rlbl], val = item[rval];
+								$target.append('<option value="' + val + '">' + lbl + '</option>');
+							});
+						}	
+					}
+				}).always(function () {
+					$target.prop('disable', false);
+				});
+
+			});
+
+			$doc_body.on('ajaxing.click', 'a[data-toggle="tab"]', toggle_tab );
+			$doc_body.on('ajaxing.change', 'select[data-toggle="tab"]', toggle_tab );
+			function toggle_tab(e, ajax) {
+				var el = this, $el = $(el), target = ($el.data('target') || $el.attr('href') || '').replace(/.*(?=#[^\s]*$)/, '');
+				var guid = $el.data('u_guid'), view_count = $el.data('view_count') || 0;
+
+				ajax.$target = $(target);				
+				ajax.opt.no_alert_on_fail = true;
+				ajax.opt.append_target_on_fail = true;
+				
+				//window.location.hash = target;
+			}
+
+			$doc_body.on('click', '[data-copy_whatsup]', function(){
+				var btn = this, $btn = $(btn), $text = $($btn.data('copy_whatsup')), text = $text.html(), 
+				bold_regrex = /(<\bstrong\b>\s*)|(\s*<\/\bstrong\b>)/gi, all_tag_regex = /<[^>]*>?/gm, br_regex = /<br\s*[\/]?>/gi;
+				 
+				text = text.replace(bold_regrex, '*'); 
+				text = text.replace(all_tag_regex, '');
+
+				if ( navigator.clipboard ){
+					navigator.clipboard.writeText(text).then(function () {
+						//console.log('Async: Copying to clipboard was successful!');
+					}, function (err) {
+						console.error('Async: Could not copy text: ', err);
+					});
+				}else{
+					var textArea = document.createElement("textarea"); textArea.value = text;
+					textArea.style.top = "0"; textArea.style.left = "0"; textArea.style.position = "fixed";
+					document.body.appendChild(textArea); textArea.focus(); textArea.select();
+
+					try {
+						var successful = document.execCommand('copy');  
+					} catch (err) {
+						console.error('Fallback: Oops, unable to copy', err);
+					}
+
+					document.body.removeChild(textArea);
+				}				
+				
+				alert('copied');
+				return false;
+
+			});
+
+			$doc_body.on('click', '[data-toggleclass]', function (e) {
+				var $el = $(this), $container = $($el.data('toggletarget')), c = $el.data('toggleclass');
+				if ($el.is(':checkbox')) {
+					$container.toggleClass(c, $el.prop('checked'));
+				} else {
+					$container.toggleClass(c);
+				}
+
+			});
+
+			$doc_body.on('click', '[data-toggle_readonly]', function (e) {
+				var $el = $(this), $container = $el.closest('.input-group'), $text = $container.find(':text');
+				if ($text.is('[readonly]')) {
+					$text.prop('readonly', false );
+				} else {
+					$text.prop('readonly', true);
+				}
+			});
+
+			$doc_body.on('change', 'select[data-change_submit]', function (e) {
+				var $sel = $(this); $form = $sel.closest('form');
+				$form.submit();
+			});
+
+			$doc_body.on('keyup change', ':text[data-copy_val]', function (e) {
+				var el = this, $el = $(el); e.preventDefault();
+				var value = $el.val();
+				if ($el.data('copy_val')) {
+					$.each($($el.data('copy_val')), function (i, v) {
+						var el_c = this, $el_c = $(el_c);
+						$el_c.val(value);
+					});
+				}
+			});
+
+			$doc_body.on('keyup change', '.dropdown-menu .dropdown-search', function (e) {
+				var el = this, $el = $(el), $menu = $el.closest('.dropdown-menu'), 
+					$lis = $menu.find('.dropdown-item'), s_txt = $el.val().toLowerCase().trim();
+
+				$lis.each(function(i, li){ 
+					let $li = $(li), txt = $li.text().toLowerCase().trim(), found = true;
+					$.each(s_txt.split(' '), function(ii, s){
+						found = txt.trim().indexOf(s) !== -1;
+						return found;
+					});
+					$li.toggle( found );
+				});
+			});
+
+			$doc_body.on('show.bs.modal', '.cmc-modal', function (e) {
+				var $modal = $(this), $mbody = $modal.find('.modal-body'), btn = e.relatedTarget, $btn = $(btn), 
+				url = $btn.data('url') || $btn.attr('href'), ajax_loaded = $mbody.data('ajax_loaded');
+				if( url && !ajax_loaded ){
+					var btn_opt = $btn.data('ajax_opt') || {};
+					var opt = { url: url, method: btn_opt.method || 'get', evt:e, data: btn_opt.data, target: $mbody };					
+					elFunc._ajax(btn, opt); //ajax(btn, opt);
+				}
+			})
+		},
+	};
+
+	window.elFunc = $.extend(window.elFunc || {}, {
+		_init: function ($wrap) {
+			$.each(this, function (name, func) {
+				if (!name.startsWith('_') && typeof func == 'function') {
+					func($wrap);
+				}
+			});
+		},
+		validate: function ($wrap) {
+			if (!$.validator || !$.validator.unobtrusive)
+				return;
+
+			$.validator.unobtrusive.parse($wrap);
+		},
+		refreshActiveTab: function ($wrap) {
+			return;
+			$wrap.find('li.active:not(.no-autoload) a[data-toggle="tab"], li a.active[data-toggle="tab"]:not(.no-autoload)').each(function () {
+				var $this = $(this), $li = $this.parent().not('.no-autoload'), $a = $li.find('a').not('.no-autoload');
+				$li.removeClass('active'); $a.removeClass('active').click();
+			});
+		},
+		ui_sortable_refresh_el:function($wrap){
+			$wrap.find('.ui-sortable').sortable('refresh');
+		},
+		autocomplete: function ($wrap) {
+			if (!$.fn.autocomplete)
+				return;
+
+			$auto_cmpl = $($wrap).find('[data-autocmpl]');
+
+			$auto_cmpl.each(function () {
+				new elFunc._autocomplete(this);
+			});
+		},
+		_autocomplete:function(el){
+			var $el = $(el), req_term = '';
+			$el.autocomplete({
+				source: function (request, response) {
+					var $txt = $(this.element), $parent = $txt.parent(); $parent.addClass('autocomplete-searching'),
+					source_url = $txt.data('source_jurl'); req_term = request.term;
+					$.ajax({
+						url: source_url, dataType: 'json', data: { term: request.term },
+						success: function (data) {
+							if( !data || !data.length){
+								data = [{label:"No match found", value: 0, no_oopen: true}];
+							}
+
+							response(data);
+						},
+						error: function( jqXHR, textStatus, statusText ){
+							let data = [], msg = "Connection Error: " + jqXHR.status + ' - ' + statusText;
+							data.push({label:msg, value: 0, no_oopen: true});
+							response( data );
+						},
+						complete: function (jqXHR, statusText) {
+							$parent.removeClass('autocomplete-searching');
+						}
+					});
+				},
+				//source: "autosuggest.php",
+				minLength: 2,
+				select: function (event, ui) {
+					var  select_url = $el.data('select_url');  //window.Log( "Selected: " + ui.item.value + " aka " + ui.item.id );
+					if( select_url && !ui.item.no_oopen ){
+						var url = select_url.dataReplacer(ui.item); // "extensions.php?phoneid=" + ui.item.phone;
+						window.location = url;
+					}		
+
+					return false;
+				}
+			});
+
+			$el.autocomplete( "instance" )._renderItem = function( ul, item ) {
+    			var label = item.label, terms_arr = req_term.split(' '); terms_arr = terms_arr.map(Function.prototype.call, String.prototype.trim); 
+				terms_arr = terms_arr.filter(function(item){ return item != ''; });
+				var terms = terms_arr.join('|'), terms_reg =  new RegExp('(' + terms +')', 'ig'), label_reged = label.replace(terms_reg, '<b>$1</b>');
+				return $( "<li class='ui-menu-item'>" )
+					.append( "<div class='ui-menu-item-wrapper'>" + label_reged + "</div>" )
+					.appendTo( ul );
+			};
+
+		},
+		fontawesome_iconpicker: function ( $wrap ) {
+			$wrap.find('.fontawesome_iconpicker').each(function (i, el) {
+				var el = this, $el = $(this);
+				$el.iconpicker();
+			});
+		},
+		_panel_reload:function( $el, e ){
+			var $el = $($el), opt = $el.data('ajax_opt') || {};
+			if( !$el || !$el.length)
+				return;
+
+			var	url = $el.data('url'), opt = { url: url, data: opt.data, evt: e };
+			
+			elFunc._ajax($el, opt);
+		},
+		_ajax: (function () {
+
+			function ajax(el, opt) {
+				var self = this; self.el = el; self.$el = $(el);
+				self.opt = $.extend({}, self.default_opt, opt);
+				self.init();
+
+				if(self.opt.send)
+					self.send();
+			}
+
+			$.extend(ajax.prototype, {
+				init: function () {
+					var self = this; self.$els = { '$self': self.$el, '$tab': self.$el.closest('.tab-pane'), '$card': self.$el.closest('.card-wrap')};
+					self.func = { 'ajax_begin': [], 'ajax_before_send': [], 'ajax_done': [], 'ajax_fail': [], 'ajax_always': [], 'ajax_finish': [] };	
+				},
+				send: function () {
+					var self = this, evt = $.Event("ajaxing." + self.opt.evt.type);
+
+					self.$el.trigger(evt, [self]); if (evt.isDefaultPrevented() || evt.result === false) return;
+					self.$el.data('ajaxing', true).addClass('ajaxing');
+
+					if (self.opt.$sub_el)
+						self.opt.$sub_el.prop('disabled', true).addClass('ajaxing_btn');
+
+					var ajax_opt = { url: self.opt.url, method: self.opt.method, data: self.opt.data };
+					if ( self.opt.data instanceof FormData ) {
+						$.extend(ajax_opt, { processData: false, contentType: false });
+					}
+
+					self.begin();
+					var ajax = $.ajax(ajax_opt).done($.proxy(self.done, self)).fail($.proxy(self.fail, self)).always($.proxy(self.always, self));
+					self.finish();
+
+					return ajax;
+                },
+				begin: function () {
+					var self = this;
+					for (var funcname in self.func.ajax_begin) {
+						if (!self.func.ajax_begin.hasOwnProperty(funcname)) continue;
+
+						var func = self.func.ajax_begin[funcname];
+						if ($.isFunction(func) && (func.apply(self.el, [self]) === false))
+							return;
+					}
+
+					if (self.$el.data('ajax_begin') && (appfunc.getFunction(self.$el.data('ajax_begin'), ["ajax"]).apply(self.el, [self]) === false))
+						return;
+
+					var evt = $.Event("ajax_begin." + self.opt.evt.type); self.$el.trigger(evt, [self]);
+					if (evt.isDefaultPrevented() || evt.result === false) return;
+
+					
+					if( !self.opt.target ){
+						var $modal = self.$el.closest('.modal');  
+						if( $modal.length ){
+							self.$target = $modal.find('.modal-body');
+						}
+					}
+					
+					if(!self.$target) {
+						var target = self.opt.target || self.$el.data('ajax');
+						target = typeof target == 'String' ? target.trim() : target;
+						if (target) {
+							self.$target = target.startsWith && target.startsWith('$') ? $(self.$els[target]) : $(target);
+						//} else if (self.$el.is('form')) {
+						} else {
+							self.$target = self.$el;
+						}						
+					}	
+
+					self.$panel_editor = self.$el.closest('.cm_panel_editor');
+
+					self.$target.addClass('ajaxing-target');
+
+					if (self.opt.emptytarget) {
+						self.$target.empty();
+                    }
+				},
+				done: function (result, textStatus, request) {
+					var self = this, args = [result, request, self];
+
+					for (var funcname in self.func.ajax_done) {
+						if (!self.func.ajax_done.hasOwnProperty(funcname)) continue;
+
+						var func = self.func.ajax_done[funcname];
+						if ($.isFunction(func) && (func.apply(self.el, args) === false))
+							return;
+					}
+
+					if (self.$el.data('ajax_done') && (appfunc.getFunction(self.$el.data('ajax_done'), ["data", "status", "xhr", 'ajax']).apply(self.el, args) === false))
+						return;
+
+					var evt = $.Event("ajax_done." + self.opt.evt.type); self.$el.trigger(evt, args);
+					if (evt.isDefaultPrevented() || evt.result === false) return;
+
+					if (typeof result === 'object') {
+						if (result.msg)
+							alert(result.msg);
+
+						var delete_prefix = self.opt.el_delete_prefix || self.$el.data('ajax_el_delete_prefix');
+						if( result.deleted && delete_prefix ){
+							$.each( result.deleted, function(i, v){
+								var $del = $(delete_prefix + v);
+								$del.remove();
+							});
+						}
+					} else {
+						var mode =  (self.opt.mode || self.$el.data('ajax_mode') || 'insert').toLowerCase();
+						var $result;
+						try{
+							$result = $(result.trim());
+						}catch(e){};
+						
+						switch(mode){
+							case 'insert': self.$target.html($result || result);  break;
+							case 'replace': self.$target.replaceWith($result || result); break;
+							case 'prepend': self.$target.prepend($result || result); break;
+							case 'append': self.$target.append($result || result); break;
+							case 'remove': self.$target.remove(); break;
+						}
+
+						$result && elFunc._init($result);	
+						self.$target.data('ajax_loaded', true);										
+					}
+
+					var ui_sortable_refresh = self.opt.ui_sortable_refresh || self.$el.data('ajax_ui_sortable_refresh_el');
+					if( ui_sortable_refresh ){
+						$ui_sortable_refresh = $(ui_sortable_refresh);
+						elFunc.ui_sortable_refresh_el($ui_sortable_refresh);
+					}
+					
+					var panel_reload = request.getResponseHeader('panel_reload');
+					if( panel_reload ){
+						var panel_reload = self.opt.panel_reload || self.$el.data('panel_reload') ||  self.$panel_editor.data('panel_reload');
+						if( panel_reload ){
+							$panel_reload = $(panel_reload);
+							elFunc._panel_reload($panel_reload, self.opt.evt);
+						}
+					}
+
+					var error_o_msg = request.getResponseHeader('error_o_msg');
+					if( error_o_msg && error_o_msg.trim() != ''){
+						alert(error_o_msg);
+					}
+
+					evt = $.Event("ajax_after_done." + self.opt.evt.type); 
+					self.$el.trigger(evt, args);
+				},
+				fail: function (jqXHR, textStatus, statusText) {
+					var self = this, args = [jqXHR, statusText, self];
+
+					for (var funcname in self.func.ajax_fail) {
+						if (!self.func.ajax_fail.hasOwnProperty(funcname)) continue;
+
+						var func = self.func.ajax_fail[funcname];
+						if ($.isFunction(func) && (func.apply(self.el, args) === false))
+							return;
+					}
+
+					if (self.$el.data('ajax_fail') && (appfunc.getFunction(self.$el.data('ajax_fail'), ["xhr", "status", "ajax"]).apply(self.el, args) === false))
+						return;
+
+					var evt = $.Event("ajax_fail." + self.opt.evt.type); self.$el.trigger(evt, args);
+					if (evt.isDefaultPrevented() || evt.result === false) return;
+
+					if (!self.opt.no_alert_on_fail)
+						alert("Connection Error: " + jqXHR.status + ' - ' + statusText);
+
+					if (self.opt.append_target_on_fail)
+						self.$target.html("Connection Error " + jqXHR.status + ' - ' + statusText);
+				},
+				always: function (jqXHR, statusText) {
+					var self = this, args = [jqXHR, statusText, self];
+
+					for (var funcname in self.func.ajax_always) {
+						if (!self.func.ajax_always.hasOwnProperty(funcname)) continue;
+
+						var func = self.func.ajax_always[funcname];
+						if ($.isFunction(func) && (func.apply(self.el, args) === false))
+							return;
+					}
+
+					if (self.$el.data('ajax_always') && (appfunc.getFunction(self.$el.data('ajax_always'), ["xhr", "status"]).apply(self.el, args) === false))
+						return;
+
+					var evt = $.Event("ajax_always." + self.opt.evt.type); self.$el.trigger(evt, args);
+					if (evt.isDefaultPrevented() || evt.result === false) return;
+
+					if (self.opt.$sub_el)
+						self.opt.$sub_el.prop('disabled', false).removeClass('ajaxing_btn');
+
+					self.$target.removeClass('ajaxing-target');
+					self.$el.data('ajaxing', false).removeClass('ajaxing');
+				},
+				finish: function () {
+					var self = this;
+					for (var funcname in self.func.ajax_finish) {
+						if (!self.func.ajax_finish.hasOwnProperty(funcname)) continue;
+
+						var func = self.func.ajax_finish[funcname];
+						if ($.isFunction(func) && (func.apply(self.el, [self]) === false))
+							return;
+					}
+					self.$el.trigger($.Event("ajax_finish." + self.opt.evt.type), [self]);
+				},
+				default_opt: {
+					send: true,
+                }
+			});
+
+			var plugin = function (el, opt) {
+				return new ajax(el, opt);
+			}
+
+			plugin.constructor = ajax;
+
+			return plugin;
+
+        })(),
+	});
+
+	window.appEvtSource = {
+
+	};
+
+	window.appPage = {
+
+	};
+
+	app.init();
+
+})(jQuery);
