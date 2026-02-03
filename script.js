@@ -217,5 +217,13 @@ function setupSearch() {
         }
     });
 }
+// Update copyright year
+function updateCopyright() {
+    const yearSpan = document.getElementById('current-year');
+    if (yearSpan) {
+        yearSpan.textContent = new Date().getFullYear();
+    }
+}
 
-
+// Call updateCopyright on load
+window.addEventListener('load', updateCopyright);
