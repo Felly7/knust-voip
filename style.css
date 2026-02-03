@@ -43,11 +43,10 @@
 .header-inner {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 1rem;
+    padding: 0 2rem;
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
-    gap: 1.5rem;
 }
 
 .logo-area {
@@ -59,10 +58,9 @@
 }
 
 .logo-img {
-    height: 50px;
+    height: 48px;
     width: auto;
-    border-radius: 4px;
-    /* Optional rounded corners */
+    display: block;
 }
 
 .site-title {
@@ -75,19 +73,26 @@
 .nav-links {
     display: flex;
     align-items: center;
-    gap: 1.25rem;
+    gap: 2rem;
+    flex: 1;
+    justify-content: center;
 }
 
 .nav-links a {
     color: #ffffff;
     text-decoration: none;
     font-weight: 500;
-    font-size: 0.95rem;
-    transition: color 0.2s;
+    font-size: 1rem;
+    font-family: var(--font-main);
+    transition: all 0.2s;
+    letter-spacing: 0.01em;
+    opacity: 0.85;
 }
 
-.nav-links a:hover {
+.nav-links a:hover,
+.nav-links a.active {
     color: var(--accent-yellow);
+    opacity: 1;
 }
 
 .admin-area {
@@ -97,8 +102,11 @@
     color: #ffffff;
     text-decoration: none;
     font-size: 0.9rem;
-    margin-left: auto;
-    padding-left: 2rem;
+    font-family: var(--font-main);
+    padding: 0.5rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    transition: all 0.2s;
 }
 
 .admin-area:hover {
