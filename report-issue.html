@@ -23,6 +23,14 @@
             <a href="https://voip.knust.edu.gh/" class="logo-area">
                 <img src="voip_logo_new.png" alt="KNUST VoIP Logo" class="logo-img">
             </a>
+            <button class="menu-toggle" aria-label="Toggle navigation">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
             <nav class="nav-links">
                 <a href="https://voip.knust.edu.gh/">Home</a>
                 <a href="about.html">About KVS</a>
@@ -46,10 +54,10 @@
 
     <main class="container">
 
-        <div class="report-tabs fade-in">
-            <button class="report-tab-btn active" onclick="switchTab('open-ticket')">Open a New Ticket</button>
-            <button class="report-tab-btn" onclick="switchTab('check-status')">Check Ticket Status</button>
-            <button class="report-tab-btn" onclick="switchTab('faqs')">View FAQs</button>
+        <div class="tabs-container fade-in">
+            <button class="tab-btn active" onclick="switchTab('open-ticket')">Open a New Ticket</button>
+            <button class="tab-btn" onclick="switchTab('check-status')">Check Ticket Status</button>
+            <button class="tab-btn" onclick="switchTab('faqs')">View FAQs</button>
         </div>
 
         <!-- Section: Open Ticket -->
@@ -61,51 +69,52 @@
 
             <form id="issueForm" onsubmit="handleTicketSubmission(event)">
                 <div class="ticket-form-group">
+                    <input type="email" id="email" class="ticket-input" placeholder=" " required>
                     <label class="ticket-label" for="email">Email Address</label>
-                    <input type="email" id="email" class="ticket-input" placeholder="Enter your email address" required>
                 </div>
 
                 <div class="ticket-form-group">
+                    <input type="text" id="fullName" class="ticket-input" placeholder=" " required>
                     <label class="ticket-label" for="fullName">Full Name</label>
-                    <input type="text" id="fullName" class="ticket-input" placeholder="Enter your full name" required>
                 </div>
 
                 <div class="ticket-form-group">
                     <div class="ticket-row">
-                        <div class="phone-wrapper">
+                        <div class="phone-wrapper ticket-form-group">
+                            <input type="tel" id="phone" class="ticket-input" placeholder=" ">
                             <label class="ticket-label optional" for="phone">Phone Number</label>
-                            <input type="tel" id="phone" class="ticket-input" placeholder="e.g. 0244000000">
                         </div>
-                        <div class="ext-wrapper">
-                            <label class="ticket-label optional" for="ext">Ext:</label>
-                            <input type="text" id="ext" class="ticket-input" placeholder="e.g. 1234">
+                        <div class="ext-wrapper ticket-form-group">
+                            <input type="text" id="ext" class="ticket-input" placeholder=" ">
+                            <label class="ticket-label optional" for="ext">Ext</label>
                         </div>
                     </div>
                 </div>
 
                 <div class="ticket-form-group">
-                    <label class="ticket-label" for="topic">Help Topic</label>
-                    <select id="topic" class="ticket-select" required>
-                        <option value="" disabled selected>— Select a Help Topic —</option>
-                        <option value="connectivity">Connection/Link Issue</option>
-                        <option value="hardware">Hardware Fault (Handset/Cable)</option>
-                        <option value="new_ext">New Extension Request</option>
-                        <option value="move_ext">Extension Transfer/Move</option>
-                        <option value="voicemail">Voicemail Setup/Reset</option>
-                        <option value="garnet">Garnet/Teams App Support</option>
-                        <option value="intl_access">International Access</option>
-                        <option value="billing">Billing/Extension Query</option>
-                        <option value="supplier">Quotation or Invoices Requests (Suppliers)</option>
-                        <option value="directory">Directory Update</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
+                    <div class="ticket-form-group">
+                        <select id="topic" class="ticket-select" required>
+                            <option value="" disabled selected></option>
+                            <option value="connectivity">Connection/Link Issue</option>
+                            <option value="hardware">Hardware Fault (Handset/Cable)</option>
+                            <option value="new_ext">New Extension Request</option>
+                            <option value="move_ext">Extension Transfer/Move</option>
+                            <option value="voicemail">Voicemail Setup/Reset</option>
+                            <option value="garnet">Garnet/Teams App Support</option>
+                            <option value="intl_access">International Access</option>
+                            <option value="billing">Billing/Extension Query</option>
+                            <option value="supplier">Quotation or Invoices Requests (Suppliers)</option>
+                            <option value="directory">Directory Update</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <label class="ticket-label" for="topic">Help Topic</label>
+                    </div>
 
-                <div class="ticket-actions">
-                    <button type="submit" class="btn-ticket btn-create">Create Ticket</button>
-                    <button type="reset" class="btn-ticket btn-reset">Reset</button>
-                    <a href="about.html" class="btn-ticket btn-cancel">Cancel</a>
-                </div>
+                    <div class="ticket-actions">
+                        <button type="submit" class="btn-ticket btn-create">Create Ticket</button>
+                        <button type="reset" class="btn-ticket btn-reset">Reset</button>
+                        <a href="about.html" class="btn-ticket btn-cancel">Cancel</a>
+                    </div>
             </form>
         </section>
 
@@ -293,16 +302,19 @@
     <script>
         function switchTab(tabId) {
             // Update buttons
-            document.querySelectorAll('.report-tab-btn').forEach(btn => {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
-                if (btn.innerText.toLowerCase().includes(tabId.split('-')[0])) {
+                if (btn.innerText.toLowerCase().includes(tabId.split('-')[0]) ||
+                    (tabId === 'open-ticket' && btn.innerText.includes('Open')) ||
+                    (tabId === 'check-status' && btn.innerText.includes('Check')) ||
+                    (tabId === 'faqs' && btn.innerText.includes('FAQs'))) {
                     btn.classList.add('active');
                 }
             });
 
             // Special case for "Open" button labeling
             if (tabId === 'open-ticket') {
-                document.querySelector('.report-tab-btn:first-child').classList.add('active');
+                // Logic handled in logic above now more robustly
             }
 
             // Update sections
@@ -337,6 +349,19 @@
             `;
         }
     </script>
+    <!--Start of Tawk.to Script-->
+    <script type="text/javascript">
+        var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+        (function () {
+            var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+            s1.async = true;
+            s1.src = 'https://embed.tawk.to/698b6fb4fe29c61c34711694/1jh4aomt1';
+            s1.charset = 'UTF-8';
+            s1.setAttribute('crossorigin', '*');
+            s0.parentNode.insertBefore(s1, s0);
+        })();
+    </script>
+    <!--End of Tawk.to Script-->
 </body>
 
 </html>
