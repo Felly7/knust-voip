@@ -22,7 +22,7 @@ if ($data) {
         [
             "title" => "Report VoIP issues",
             "description" => "Submit a ticket for technical problems.",
-            "url" => "https://helpdesk.knust.edu.gh/open.php",
+            "url" => "https://helpdesk.knust.edu.gh/tickets/open.php",
             "type" => "link",
             "category" => "Support"
         ],

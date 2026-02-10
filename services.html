@@ -27,8 +27,8 @@
             <nav class="nav-links">
                 <a href="https://voip.knust.edu.gh/">Home</a>
                 <a href="about.html">About KVS</a>
-                <a href="https://voip.knust.edu.gh/files/directory/VOIP%20DIRECTORY%202025.pdf"
-                    target="_blank">Print</a>
+                <a href="report-issue.html">Report an Issue</a>
+                <a href="#" onclick="openPrintModal(event)">Print</a>
                 <a href="services.html" class="active">Our Services</a>
                 <a href="resources.html">Resources</a>
                 <a href="contact.html">Contact Us</a>
@@ -126,6 +126,30 @@
             <p>Copyright &copy; 2017 - <span id="current-year"></span>. VOIP DIRECTORY</p>
         </div>
     </footer>
+
+    <!-- Digital Print Modal -->
+    <div id="printModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closePrintModal()">&times;</button>
+            <div class="modal-header">
+                <h2>Digital Print Directory</h2>
+                <p>Enter a department or location to generate a printable directory.</p>
+            </div>
+            <div class="modal-form-group">
+                <label class="modal-label" for="printLocation">Department / Location Name</label>
+                <input type="text" id="printLocation" class="modal-input"
+                    placeholder="e.g. Engineering, Administration..." onkeypress="handlePrintKeyPress(event)">
+            </div>
+            <div class="modal-suggestions" id="printSuggestions">
+                <span class="suggestion-tag" onclick="setPrintLocation('Administration')">Administration</span>
+                <span class="suggestion-tag" onclick="setPrintLocation('Engineering')">Engineering</span>
+                <span class="suggestion-tag" onclick="setPrintLocation('Science')">Science</span>
+                <span class="suggestion-tag" onclick="setPrintLocation('Health Sciences')">Health Sciences</span>
+                <span class="suggestion-tag" onclick="setPrintLocation('Halls of Residence')">Halls</span>
+            </div>
+            <button class="modal-btn" onclick="generatePrintDirectory()">Generate Print Directory</button>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>

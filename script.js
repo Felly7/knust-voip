@@ -31,7 +31,7 @@ const defaultResources = [
         title: "Report VoIP issues",
         description: "Submit a ticket for technical problems.",
         image: "voip.jpg",
-        url: "https://helpdesk.knust.edu.gh/open.php",
+        url: "https://helpdesk.knust.edu.gh/tickets/open.php",
         type: "link",
         category: "Support"
     },
@@ -224,6 +224,57 @@ function updateCopyright() {
         yearSpan.textContent = new Date().getFullYear();
     }
 }
+
+// Digital Print Modal Functions
+function openPrintModal(e) {
+    if (e) e.preventDefault();
+    const modal = document.getElementById('printModal');
+    if (modal) {
+        modal.classList.add('active');
+        // Clear input when opening
+        const input = document.getElementById('printLocation');
+        if (input) {
+            input.value = '';
+            input.focus();
+        }
+    }
+}
+
+function closePrintModal() {
+    const modal = document.getElementById('printModal');
+    if (modal) modal.classList.remove('active');
+}
+
+function setPrintLocation(loc) {
+    const input = document.getElementById('printLocation');
+    if (input) {
+        input.value = loc;
+        generatePrintDirectory();
+    }
+}
+
+function handlePrintKeyPress(e) {
+    if (e.key === 'Enter') {
+        generatePrintDirectory();
+    }
+}
+
+function generatePrintDirectory() {
+    const input = document.getElementById('printLocation');
+    if (!input) return;
+
+    const location = input.value.trim();
+    // Use an empty string if nothing entered (will show all or as handled by print page)
+    window.location.href = `print_directory.html?location=${encodeURIComponent(location)}`;
+}
+
+// Close modal when clicking outside content
+window.addEventListener('click', (e) => {
+    const modal = document.getElementById('printModal');
+    if (e.target === modal) {
+        closePrintModal();
+    }
+});
 
 // Call updateCopyright on load
 window.addEventListener('load', updateCopyright);

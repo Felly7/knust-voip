@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report an Issue - KNUST VoIP System</title>
+    <link rel="icon" type="image/png" href="Gemini favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <meta name="description" content="Report a VoIP issue to the KNUST UITS Help Desk.">
+</head>
+
+<body class="page-report-issue">
+
+    <!-- Global Header -->
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="https://voip.knust.edu.gh/" class="logo-area">
+                <img src="voip_logo_new.png" alt="KNUST VoIP Logo" class="logo-img">
+            </a>
+            <nav class="nav-links">
+                <a href="https://voip.knust.edu.gh/">Home</a>
+                <a href="about.html">About KVS</a>
+                <a href="report-issue.html" class="active">Report an Issue</a>
+                <a href="#" onclick="openPrintModal(event)">Print</a>
+                <a href="services.html">Our Services</a>
+                <a href="resources.html">Resources</a>
+                <a href="contact.html">Contact Us</a>
+            </nav>
+            <a href="#" class="admin-area">
+                admin
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </a>
+        </div>
+    </header>
+
+    <div class="page-banner"></div>
+
+    <main class="container">
+
+        <div class="report-tabs fade-in">
+            <button class="report-tab-btn active" onclick="switchTab('open-ticket')">Open a New Ticket</button>
+            <button class="report-tab-btn" onclick="switchTab('check-status')">Check Ticket Status</button>
+            <button class="report-tab-btn" onclick="switchTab('faqs')">View FAQs</button>
+        </div>
+
+        <!-- Section: Open Ticket -->
+        <section id="open-ticket" class="ticket-container report-section active">
+            <div class="ticket-header">
+                <h2>Open a New Ticket</h2>
+                <p>Please fill in the form below to open a new ticket.</p>
+            </div>
+
+            <form id="issueForm" onsubmit="handleTicketSubmission(event)">
+                <div class="ticket-form-group">
+                    <label class="ticket-label" for="email">Email Address</label>
+                    <input type="email" id="email" class="ticket-input" placeholder="Enter your email address" required>
+                </div>
+
+                <div class="ticket-form-group">
+                    <label class="ticket-label" for="fullName">Full Name</label>
+                    <input type="text" id="fullName" class="ticket-input" placeholder="Enter your full name" required>
+                </div>
+
+                <div class="ticket-form-group">
+                    <div class="ticket-row">
+                        <div class="phone-wrapper">
+                            <label class="ticket-label optional" for="phone">Phone Number</label>
+                            <input type="tel" id="phone" class="ticket-input" placeholder="e.g. 0244000000">
+                        </div>
+                        <div class="ext-wrapper">
+                            <label class="ticket-label optional" for="ext">Ext:</label>
+                            <input type="text" id="ext" class="ticket-input" placeholder="e.g. 1234">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ticket-form-group">
+                    <label class="ticket-label" for="topic">Help Topic</label>
+                    <select id="topic" class="ticket-select" required>
+                        <option value="" disabled selected>— Select a Help Topic —</option>
+                        <option value="connectivity">Connection/Link Issue</option>
+                        <option value="hardware">Hardware Fault (Handset/Cable)</option>
+                        <option value="new_ext">New Extension Request</option>
+                        <option value="move_ext">Extension Transfer/Move</option>
+                        <option value="voicemail">Voicemail Setup/Reset</option>
+                        <option value="garnet">Garnet/Teams App Support</option>
+                        <option value="intl_access">International Access</option>
+                        <option value="billing">Billing/Extension Query</option>
+                        <option value="directory">Directory Update</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="ticket-actions">
+                    <button type="submit" class="btn-ticket btn-create">Create Ticket</button>
+                    <button type="reset" class="btn-ticket btn-reset">Reset</button>
+                    <a href="about.html" class="btn-ticket btn-cancel">Cancel</a>
+                </div>
+            </form>
+        </section>
+
+        <!-- Section: Check Status -->
+        <section id="check-status" class="ticket-container report-section status-checker">
+            <div class="ticket-header">
+                <h2>Check Ticket Status</h2>
+                <p>Enter your Ticket ID or Email to check the status of your request.</p>
+            </div>
+
+            <form id="statusForm" onsubmit="handleStatusCheck(event)">
+                <div class="ticket-form-group" style="text-align: left;">
+                    <label class="ticket-label" for="statusId">Ticket ID or Email</label>
+                    <input type="text" id="statusId" class="ticket-input" placeholder="e.g. #12345 or user@knust.edu.gh"
+                        required>
+                </div>
+
+                <div class="ticket-actions">
+                    <button type="submit" class="btn-ticket btn-create"
+                        style="background: var(--primary-navy); color: white;">Check Status</button>
+                </div>
+            </form>
+
+            <div id="statusResult" class="status-result">
+                <!-- Result populated by JS -->
+            </div>
+        </section>
+
+        <!-- Section: FAQs -->
+        <section id="faqs" class="ticket-container report-section">
+            <div class="ticket-header">
+                <h2>Frequently Asked Questions</h2>
+                <p>Quick solutions to common VoIP problems.</p>
+            </div>
+
+            <div class="faq-list">
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">How do I request a new VoIP line?</button>
+                    <div class="faq-answer">
+                        <p>To request a new line, use the "Open a New Ticket" form above and select "New Extension
+                            Request" as the help topic. You'll need to provide the physical location/office number and
+                            HOD approval.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">What is the Garnet app and how do I use
+                        it?</button>
+                    <div class="faq-answer">
+                        <p>The Garnet app (powered by Microsoft Teams) allows you to use your university extension on
+                            your mobile device or laptop. Simply log in with your university credentials and search for
+                            "Garnet" in the apps menu.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">How can I reset my voicemail
+                        password?</button>
+                    <div class="faq-answer">
+                        <p>Dial *97 from your extension or submit a ticket under "Voicemail Setup/Reset". Default
+                            passwords should be changed immediately for security.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">Can I make international calls?</button>
+                    <div class="faq-answer">
+                        <p>International dialing is restricted by default. If your role requires international access,
+                            please submit a ticket under "International Access" with approval from your Dean or
+                            Director.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">Who do I contact for urgent faults?</button>
+                    <div class="faq-answer">
+                        <p>For urgent campus-wide network outages, please call the NOID DIVISION at +233 50 912 2826
+                            (Ext: 170130).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container" style="padding: 0;">
+            <p>Copyright &copy; 2017 - <span id="current-year"></span>. VOIP DIRECTORY</p>
+        </div>
+    </footer>
+
+    <!-- Digital Print Modal -->
+    <div id="printModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closePrintModal()">&times;</button>
+            <div class="modal-header">
+                <h2>Digital Print Directory</h2>
+                <p>Enter a department or location to generate a printable directory.</p>
+            </div>
+            <div class="modal-form-group">
+                <label class="modal-label" for="printLocation">Department / Location Name</label>
+                <input type="text" id="printLocation" class="modal-input"
+                    placeholder="e.g. Engineering, Administration..." onkeypress="handlePrintKeyPress(event)">
+            </div>
+            <div class="modal-suggestions" id="printSuggestions">
+                <span class="suggestion-tag" onclick="setPrintLocation('Administration')">Administration</span>
+                <span class="suggestion-tag" onclick="setPrintLocation('Engineering')">Engineering</span>
+                <span class="suggestion-tag" onclick="setPrintLocation('Science')">Science</span>
+                <span class="suggestion-tag" onclick="setPrintLocation('Health Sciences')">Health Sciences</span>
+                <span class="suggestion-tag" onclick="setPrintLocation('Halls of Residence')">Halls</span>
+            </div>
+            <button class="modal-btn" onclick="generatePrintDirectory()">Generate Print Directory</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        function switchTab(tabId) {
+            // Update buttons
+            document.querySelectorAll('.report-tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.innerText.toLowerCase().includes(tabId.split('-')[0])) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Special case for "Open" button labeling
+            if (tabId === 'open-ticket') {
+                document.querySelector('.report-tab-btn:first-child').classList.add('active');
+            }
+
+            // Update sections
+            document.querySelectorAll('.report-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function toggleFaq(button) {
+            const item = button.parentElement;
+            item.classList.toggle('active');
+        }
+
+        function handleTicketSubmission(event) {
+            event.preventDefault();
+            alert('Thank you! Your ticket #KV' + Math.floor(1000 + Math.random() * 9000) + ' has been submitted successfully.');
+            document.getElementById('issueForm').reset();
+        }
+
+        function handleStatusCheck(event) {
+            event.preventDefault();
+            const resultDiv = document.getElementById('statusResult');
+            const id = document.getElementById('statusId').value;
+
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
+                <div class="status-tag status-pending">In Progress</div>
+                <h3 style="color: var(--primary-navy); margin-bottom: 0.5rem;">Ticket: ${id.startsWith('#') ? id : '#KVG823'}</h3>
+                <p style="margin-bottom: 1rem; color: var(--text-secondary);">Last updated: Just now</p>
+                <p style="color: var(--text-primary);">The UITS Support Team is currently reviewing your request regarding extension configuration. Please check back in 24 hours.</p>
+            `;
+        }
+    </script>
+</body>
+
+</html>
