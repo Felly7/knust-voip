@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Directory | KNUST VoIP</title>
+    <link rel="icon" type="image/png" href="Gemini favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .student-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-num {
+            display: block;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-navy);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .search-area {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .search-wrapper {
+            position: relative;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .search-input-main {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            padding-left: 3rem;
+            font-size: 1.1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .search-input-main:focus {
+            border-color: var(--primary-navy);
+            box-shadow: 0 0 0 4px rgba(13, 6, 59, 0.1);
+        }
+
+        .search-icon-fixed {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        .student-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .student-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+            display: flex;
+            gap: 1.5rem;
+            position: relative;
+        }
+
+        .student-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1);
+            border-color: var(--accent-orange);
+        }
+
+        .student-avatar {
+            width: 80px;
+            height: 80px;
+            background: #f1f5f9;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-navy);
+            flex-shrink: 0;
+        }
+
+        .student-info h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--primary-navy);
+            margin-bottom: 0.5rem;
+        }
+
+        .student-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .student-dept {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--accent-orange);
+        }
+
+        .id-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #eff6ff;
+            color: #1e40af;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .loading-overlay {
+            text-align: center;
+            padding: 4rem;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(13, 6, 59, 0.1);
+            border-left-color: var(--primary-navy);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Global Header -->
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="https://voip.knust.edu.gh/" class="logo-area">
+                <img src="voip_logo_new.png" alt="KNUST VoIP Logo" class="logo-img">
+            </a>
+            <button class="menu-toggle" aria-label="Toggle navigation">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <nav class="nav-links">
+                <a href="https://voip.knust.edu.gh/">Home</a>
+                <a href="about.html">About KVS</a>
+                <a href="report-issue.html">Report an Issue</a>
+                <a href="service-requests.html">Request Services</a>
+                <a href="#" onclick="openPrintModal(event)">Print</a>
+                <a href="services.html">Our Services</a>
+                <a href="resources.html">Resources</a>
+                <a href="students.html" class="active">Students</a>
+                <a href="feedback.html">Feedback</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="page-banner"></div>
+
+    <main class="container">
+        <header class="hero">
+            <h1 class="fade-in">Student Directory</h1>
+            <p class="subtitle fade-in-delay">Search and locate student information across all colleges and departments.
+            </p>
+        </header>
+
+        <section class="student-stats fade-in-delay-2">
+            <div class="stat-card">
+                <span class="stat-num" id="total-students">...</span>
+                <span class="stat-label">Total Students</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-num">6</span>
+                <span class="stat-label">Colleges</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-num">250+</span>
+                <span class="stat-label">Departments</span>
+            </div>
+        </section>
+
+        <section class="search-area fade-in-delay-3">
+            <div class="search-wrapper">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="search-icon-fixed">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="student-search" class="search-input-main"
+                    placeholder="Search by name, ID, or department..." autocomplete="off">
+            </div>
+            <div id="search-feedback" style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+                Enter at least 3 characters to search the records.
+            </div>
+        </section>
+
+        <div id="loading-state" class="loading-overlay" style="display: none;">
+            <div class="spinner"></div>
+            <p>Scanning 55MB Student Profile database...</p>
+        </div>
+
+        <section id="student-results" class="student-grid fade-in-delay-4">
+            <!-- Results injected by JS -->
+        </section>
+
+        <div id="no-results" class="loading-overlay" style="display: none;">
+            <p>No students found matching your search criteria.</p>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container" style="padding: 0;">
+            <p>Copyright &copy; 2017 - <span id="current-year"></span>. VOIP DIRECTORY</p>
+        </div>
+    </footer>
+
+    <!-- Digital Print Modal -->
+    <div id="printModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closePrintModal()">&times;</button>
+            <div class="modal-header">
+                <h2>Digital Print Directory</h2>
+                <p>Enter a department or location to generate a printable directory.</p>
+            </div>
+            <div class="modal-form-group">
+                <label class="modal-label" for="printLocation">Department / Location Name</label>
+                <input type="text" id="printLocation" class="modal-input"
+                    placeholder="e.g. Engineering, Administration..." onkeypress="handlePrintKeyPress(event)">
+            </div>
+            <button class="modal-btn" onclick="generatePrintDirectory()">Generate Print Directory</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="student_data.js"></script>
+
+    <!--Start of Tawk.to Script-->
+    <script type="text/javascript">
+        var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+        (function () {
+            var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+            s1.async = true;
+            s1.src = 'https://embed.tawk.to/698b6fb4fe29c61c34711694/1jh4aomt1';
+            s1.charset = 'UTF-8';
+            s1.setAttribute('crossorigin', '*');
+            s0.parentNode.insertBefore(s1, s0);
+        })();
+    </script>
+</body>
+
+</html>
