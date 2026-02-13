@@ -1387,3 +1387,143 @@ footer p {
 }
 
      
+/* ============================================
+   FEEDBACK PAGE STYLES
+   ============================================ */
+
+.feedback-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.feedback-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 3px solid var(--accent-orange);
+}
+
+.feedback-header h1 {
+    color: var(--primary-navy);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.feedback-header h2 {
+    color: var(--text-secondary);
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+.feedback-intro {
+    background: #f8fafc;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border-left: 4px solid var(--primary-navy);
+}
+
+.feedback-intro p {
+    line-height: 1.8;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.feedback-benefits {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 6px;
+    margin: 1.5rem 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.feedback-benefits h3 {
+    color: var(--primary-navy);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.feedback-benefits ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.feedback-benefits li {
+    padding: 0.5rem 0;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.feedback-note {
+    background: #fff8f0;
+    padding: 1.5rem;
+    border-radius: 6px;
+    border-left: 4px solid var(--accent-orange);
+    margin: 1.5rem 0;
+}
+
+.feedback-note p {
+    margin: 0.5rem 0;
+    color: var(--text-primary);
+}
+
+.feedback-note strong {
+    color: var(--primary-navy);
+}
+
+.feedback-cta {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-navy);
+    text-align: center;
+    margin: 1.5rem 0 1rem;
+}
+
+.feedback-form-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin: 2rem 0;
+}
+
+.feedback-form-container iframe {
+    display: block;
+    width: 100%;
+    border: none;
+}
+
+.feedback-footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    margin-top: 2rem;
+}
+
+.feedback-footer p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin: 0;
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .feedback-header h1 {
+        font-size: 2rem;
+    }
+    .feedback-header h2 {
+        font-size: 1.2rem;
+    }
+    .feedback-intro {
+        padding: 1.5rem;
+    }
+    .feedback-form-container iframe {
+        height: 2200px;
+    }
+}

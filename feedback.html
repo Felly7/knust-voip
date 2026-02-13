@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Feedback - KNUST VoIP System</title>
+    <link rel="icon" type="image/png" href="Gemini favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <meta name="description" content="Share your feedback on KNUST VoIP services and help us improve.">
+</head>
+
+<body class="page-feedback">
+
+    <!-- Global Header -->
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="https://voip.knust.edu.gh/" class="logo-area">
+                <img src="voip_logo_new.png" alt="KNUST VoIP Logo" class="logo-img">
+            </a>
+            <button class="menu-toggle" aria-label="Toggle navigation">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <nav class="nav-links">
+                <a href="https://voip.knust.edu.gh/">Home</a>
+                <a href="about.html">About KVS</a>
+                <a href="report-issue.html">Report an Issue</a>
+                <a href="service-requests.html">Request Services</a>
+                <a href="#" onclick="openPrintModal(event)">Print</a>
+                <a href="services.html">Our Services</a>
+                <a href="resources.html">Resources</a>
+                <a href="contact.html">Contact Us</a>
+                <a href="feedback.html" class="active">Feedback</a>
+            </nav>
+            <a href="#" class="admin-area">
+                admin
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </a>
+        </div>
+    </header>
+
+    <div class="page-banner"></div>
+
+    <main class="container">
+
+        <div class="feedback-container fade-in">
+            <div class="feedback-header">
+                <h1>KNUST VoIP User Feedback</h1>
+                <h2>Service & Quality Assessment Form</h2>
+            </div>
+
+            <div class="feedback-intro">
+                <p>As part of our ongoing efforts to enhance digital communication across campus and prepare for the
+                    upcoming <strong>Call and Contact Center</strong>, we invite you to share your experience with the
+                    university's VoIP system.</p>
+
+                <div class="feedback-benefits">
+                    <h3>Your feedback will support:</h3>
+                    <ul>
+                        <li>✓ Service quality improvement</li>
+                        <li>✓ System reliability enhancement</li>
+                        <li>✓ User training development</li>
+                        <li>✓ Strategic planning for communication modernization</li>
+                    </ul>
+                </div>
+
+                <div class="feedback-note">
+                    <p><strong>The university is committed to improving the reliability, performance, and efficiency of
+                            the VoIP communication system across campus.</strong></p>
+                    <p>This feedback will be used for quality assurance, infrastructure improvement, training
+                        development, and downtime reduction. Your honest responses will help us improve service delivery
+                        and reduce offline devices.</p>
+                </div>
+
+                <p class="feedback-cta">Kindly take a few minutes to complete the feedback form below:</p>
+            </div>
+
+            <!-- Embedded Google Form -->
+            <div class="feedback-form-container">
+                <iframe
+                    src="https://docs.google.com/forms/d/e/1FAIpQLSdDOJo9dsvE9VYCt8Ha4ob-CqUhxD2zDvIBBkNXeamOBIqCFQ/viewform?embedded=true"
+                    width="100%" height="2400" frameborder="0" marginheight="0" marginwidth="0"
+                    title="KNUST VoIP Feedback Form">
+                    Loading…
+                </iframe>
+            </div>
+
+            <div class="feedback-footer">
+                <p>Thank you for taking the time to share your feedback. Your input is invaluable in helping us deliver
+                    better VoIP services to the KNUST community.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Print Modal -->
+    <div id="printModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closePrintModal()">&times;</span>
+            <h2>Digital Print Directory</h2>
+            <p>Enter a department or location to generate a printable directory.</p>
+            <input type="text" id="printDepartment" class="modal-input"
+                placeholder="e.g., Engineering, Hospital, Security">
+            <button class="modal-btn" onclick="generatePrintDirectory()">Generate Print Directory</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>Copyright © 2017 - <span id="currentYear"></span>. VOIP DIRECTORY</p>
+    </footer>
+
+    <script>
+        // Set current year
+        document.getElementById('currentYear').innerText = new Date().getFullYear();
+
+        // Mobile menu toggle
+        document.querySelector('.menu-toggle').addEventListener('click', function () {
+            document.querySelector('.nav-links').classList.toggle('active');
+        });
+
+        // Print modal functions
+        function openPrintModal(event) {
+            event.preventDefault();
+            document.getElementById('printModal').style.display = 'block';
+        }
+
+        function closePrintModal() {
+            document.getElementById('printModal').style.display = 'none';
+        }
+
+        function generatePrintDirectory() {
+            const dept = document.getElementById('printDepartment').value;
+            if (dept) {
+                window.open(`print-directory.html?dept=${encodeURIComponent(dept)}`, '_blank');
+                closePrintModal();
+            } else {
+                alert('Please enter a department or location.');
+            }
+        }
+
+        window.onclick = function (event) {
+            const modal = document.getElementById('printModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+
+    <!--Start of Tawk.to Script-->
+    <script type="text/javascript">
+        var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+        (function () {
+            var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+            s1.async = true;
+            s1.src = 'https://embed.tawk.to/67694e7eaf5bfec1dbdaa0f7/1ifpfr0u3';
+            s1.charset = 'UTF-8';
+            s1.setAttribute('crossorigin', '*');
+            s0.parentNode.insertBefore(s1, s0);
+        })();
+    </script>
+    <!--End of Tawk.to Script-->
+
+</body>
+
+</html>
