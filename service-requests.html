@@ -559,6 +559,30 @@
         }
     </script>
 
+    <!-- Digital Print Modal -->
+    <div id="printModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closePrintModal()">&times;</button>
+            <div class="modal-header">
+                <h2>Digital Print Directory</h2>
+                <p>Enter a department or location to generate a printable directory.</p>
+            </div>
+            <div class="modal-form-group">
+                <label class="modal-label" for="printLocation">Department / Location Name</label>
+                <input type="text" id="printLocation" class="modal-input"
+                    placeholder="e.g. Engineering, Administration..." onkeypress="handlePrintKeyPress(event)">
+            </div>
+            <div class="modal-suggestions" id="printSuggestions">
+                <span class="suggestion-tag" onclick="setPrintLocation('Administration')">Administration</span>
+                <span class="suggestion-tag" onclick="setPrintLocation('Engineering')">Engineering</span>
+                <span class="suggestion-tag" onclick="setPrintLocation('Science')">Science</span>
+                <span class="suggestion-tag" onclick="setPrintLocation('Health Sciences')">Health Sciences</span>
+                <span class="suggestion-tag" onclick="setPrintLocation('Halls of Residence')">Halls</span>
+            </div>
+            <button class="modal-btn" onclick="generatePrintDirectory()">Generate Print Directory</button>
+        </div>
+    </div>
+
     <!--Start of Tawk.to Script-->
     <script type="text/javascript">
         var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
