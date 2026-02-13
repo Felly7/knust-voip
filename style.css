@@ -106,7 +106,7 @@ body {
 .nav-links {
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: 1.2rem;
     flex: 1;
     justify-content: center;
 }
@@ -115,11 +115,12 @@ body {
     color: #ffffff;
     text-decoration: none;
     font-weight: 500;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-family: var(--font-main);
     transition: all 0.2s;
     letter-spacing: 0.01em;
     opacity: 0.85;
+    white-space: nowrap;
 }
 
 .nav-links a:hover,
@@ -1517,12 +1518,15 @@ footer p {
     .feedback-header h1 {
         font-size: 2rem;
     }
+
     .feedback-header h2 {
         font-size: 1.2rem;
     }
+
     .feedback-intro {
         padding: 1.5rem;
     }
+
     .feedback-form-container iframe {
         height: 2200px;
     }
